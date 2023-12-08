@@ -1,5 +1,17 @@
+//! [Advent of Code](https://adventofcode.com/) solutions
+
+#![warn(missing_docs)]
+
 use chrono::{Datelike, Utc};
 use reqwest::blocking::Client;
+
+/// Solutions for 2023
+pub mod aoc2023 {
+    pub mod day01;
+}
+
+/// Common return type of puzzle solutions
+pub type PuzzleResult = Result<String, Box<dyn std::error::Error>>;
 
 /// Returns the input for a certain Advent of Code puzzle or an error if the download fails
 pub fn download_input(session_token: String, year: usize, day: usize) -> Result<String, String> {

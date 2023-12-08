@@ -66,8 +66,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Solve puzzle
     match (args.year, args.day, args.part) {
-        (year, day, part) => Err(format!(
-            "no implementation for day {day} part {part} of {year}"
-        )),
-    }?
+        (2023, 1, 1) => advent_of_code::aoc2023::day01::part1(input),
+        (year, day, part) => Err(format!("no solution for day {day} part {part} of {year}"))?,
+    }
+    .and_then(|solution| Ok(println!("Solution: {solution}")))
 }
