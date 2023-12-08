@@ -51,3 +51,31 @@ pub fn part2(input: String) -> crate::PuzzleResult {
     }
     Ok(sum.to_string())
 }
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_part1() {
+        let input = "\
+            1abc2\n\
+            pqr3stu8vwx\n\
+            a1b2c3d4e5f\n\
+            treb7uchet"
+            .to_string();
+        assert_eq!(super::part1(input).unwrap(), "142".to_string());
+    }
+
+    #[test]
+    fn test_part2() {
+        let input = "\
+            two1nine\n\
+            eightwothree\n\
+            abcone2threexyz\n\
+            xtwone3four\n\
+            4nineeightseven2\n\
+            zoneight234\n\
+            7pqrstsixteen"
+            .to_string();
+        assert_eq!(super::part2(input).unwrap(), "281".to_string());
+    }
+}
