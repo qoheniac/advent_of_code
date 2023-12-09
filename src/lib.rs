@@ -8,6 +8,7 @@ use reqwest::blocking::Client;
 /// Solutions for 2023
 pub mod aoc2023 {
     pub mod day01;
+    pub mod day02;
 }
 
 /// Common return type of puzzle solutions
