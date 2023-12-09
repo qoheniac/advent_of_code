@@ -1,4 +1,4 @@
-use advent_of_code::{current_year, download_input};
+use advent_of_code::{current_year, download_input, solve};
 use clap::Parser;
 
 const DEFAULT_TOKEN_PATH: &str = "token.txt";
@@ -65,12 +65,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }?;
 
     // Solve puzzle
-    match (args.year, args.day, args.part) {
-        (2023, 1, 1) => advent_of_code::aoc2023::day01::part1(input),
-        (2023, 1, 2) => advent_of_code::aoc2023::day01::part2(input),
-        (2023, 2, 1) => advent_of_code::aoc2023::day02::part1(input),
-        (2023, 2, 2) => advent_of_code::aoc2023::day02::part2(input),
-        (year, day, part) => Err(format!("no solution for day {day} part {part} of {year}"))?,
-    }
-    .and_then(|solution| Ok(println!("Solution: {solution}")))
+    solve(args.year, args.day, args.part, input)
+        .and_then(|solution| Ok(println!("Solution: {solution}")))
 }
