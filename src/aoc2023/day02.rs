@@ -14,16 +14,14 @@ pub fn part1(input: String) -> crate::PuzzleResult {
                 Some(("Game", number)) => number.parse()?,
                 _ => Err(format!("no game ID found in {line}"))?,
             };
-            for subset in subsets.split("; ") {
-                for cubes in subset.split(", ") {
-                    if match cubes.split_once(" ") {
-                        Some((number, "red")) => number.parse::<usize>()? > 12,
-                        Some((number, "green")) => number.parse::<usize>()? > 13,
-                        Some((number, "blue")) => number.parse::<usize>()? > 14,
-                        _ => Err(format!("invalid subset in {line}"))?,
-                    } {
-                        continue 'lines;
-                    }
+            for cubes in subsets.split("; ").flat_map(|subset| subset.split(", ")) {
+                if match cubes.split_once(" ") {
+                    Some((number, "red")) => number.parse::<usize>()? > 12,
+                    Some((number, "green")) => number.parse::<usize>()? > 13,
+                    Some((number, "blue")) => number.parse::<usize>()? > 14,
+                    _ => Err(format!("invalid subset in {line}"))?,
+                } {
+                    continue 'lines;
                 }
             }
             sum += id;
@@ -39,14 +37,12 @@ pub fn part2(input: String) -> crate::PuzzleResult {
     for line in input.lines() {
         let (mut reds, mut greens, mut blues) = (0, 0, 0);
         if let Some(subsets) = line.split(": ").last() {
-            for subset in subsets.split("; ") {
-                for cubes in subset.split(", ") {
-                    match cubes.split_once(" ") {
-                        Some((number, "red")) => reds = reds.max(number.parse()?),
-                        Some((number, "green")) => greens = greens.max(number.parse()?),
-                        Some((number, "blue")) => blues = blues.max(number.parse()?),
-                        _ => Err(format!("invalid subset in {line}"))?,
-                    }
+            for cubes in subsets.split("; ").flat_map(|subset| subset.split(", ")) {
+                match cubes.split_once(" ") {
+                    Some((number, "red")) => reds = reds.max(number.parse()?),
+                    Some((number, "green")) => greens = greens.max(number.parse()?),
+                    Some((number, "blue")) => blues = blues.max(number.parse()?),
+                    _ => Err(format!("invalid subset in {line}"))?,
                 }
             }
         }
