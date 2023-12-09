@@ -21,6 +21,7 @@ pub fn download_input(session_token: String, year: usize, day: usize) -> Result<
         .get(&url)
         .header("Cookie", format!("session={session_token}"))
         .send()
+        .and_then(|response| response.error_for_status())
         .and_then(|response| response.text())
         .or(Err(format!("couldn't download from {url}")))
 }
