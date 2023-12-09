@@ -32,17 +32,45 @@ pub fn part1(input: String) -> crate::PuzzleResult {
     Ok(sum.to_string())
 }
 
+/// Part 2: Sum up over all games the products of the minimum number of cubes
+/// needed of each color
+pub fn part2(input: String) -> crate::PuzzleResult {
+    let mut sum = 0;
+    for line in input.lines() {
+        let (mut reds, mut greens, mut blues) = (0, 0, 0);
+        if let Some(subsets) = line.split(": ").last() {
+            for subset in subsets.split("; ") {
+                for cubes in subset.split(", ") {
+                    match cubes.split_once(" ") {
+                        Some((number, "red")) => reds = reds.max(number.parse()?),
+                        Some((number, "green")) => greens = greens.max(number.parse()?),
+                        Some((number, "blue")) => blues = blues.max(number.parse()?),
+                        _ => Err(format!("invalid subset in {line}"))?,
+                    }
+                }
+            }
+        }
+        sum += reds * greens * blues;
+    }
+    Ok(sum.to_string())
+}
+
 #[cfg(test)]
 mod tests {
+    const INPUT: &str = "\
+        Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green\n\
+        Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue\n\
+        Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red\n\
+        Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red\n\
+        Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green";
+
     #[test]
     fn test_part1() {
-        let input = "\
-            Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green\n\
-            Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue\n\
-            Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red\n\
-            Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red\n\
-            Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"
-            .to_string();
-        assert_eq!(super::part1(input).unwrap(), "8".to_string());
+        assert_eq!(super::part1(INPUT.to_string()).unwrap(), "8".to_string());
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(super::part2(INPUT.to_string()).unwrap(), "2286".to_string());
     }
 }

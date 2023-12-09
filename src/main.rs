@@ -69,6 +69,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         (2023, 1, 1) => advent_of_code::aoc2023::day01::part1(input),
         (2023, 1, 2) => advent_of_code::aoc2023::day01::part2(input),
         (2023, 2, 1) => advent_of_code::aoc2023::day02::part1(input),
+        (2023, 2, 2) => advent_of_code::aoc2023::day02::part2(input),
         (year, day, part) => Err(format!("no solution for day {day} part {part} of {year}"))?,
     }
     .and_then(|solution| Ok(println!("Solution: {solution}")))
