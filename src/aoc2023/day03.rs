@@ -1,7 +1,9 @@
 //! Day 3: Gear Ratios
 //!
 //! Any number adjacent (horizontally, vertically, or diagonally) to a symbol
-//! that isn't a dot is a part number.
+//! that isn't a dot is a part number and any star that is adjacent to exactly
+//! two part numbers is a gear with a gear ratio that is the product of the
+//! adjacent part numbers.
 
 /// Part 1: Sum up all part numbers
 pub fn part1(input: String) -> crate::PuzzleResult {
@@ -68,11 +70,76 @@ pub fn part1(input: String) -> crate::PuzzleResult {
     Ok(sum.to_string())
 }
 
+/// Part 2: Sum up all gear ratios
+pub fn part2(input: String) -> crate::PuzzleResult {
+    let mut sum = 0;
+    let mut previous_stars = Vec::<(usize, Vec<usize>)>::new();
+    let mut previous_numbers = Vec::<(usize, usize, usize)>::new();
+    for line in input.lines() {
+        let mut stars = Vec::new();
+        let mut numbers = Vec::new();
+        let mut number: Option<(usize, String)> = None;
+
+        // Collect part number candidates and symbol positions
+        for (position, character) in line.chars().enumerate() {
+            if character.is_numeric() {
+                if let Some((_, string)) = number.as_mut() {
+                    // Extend number
+                    string.push(character)
+                } else {
+                    // New number
+                    number = Some((position, character.to_string()))
+                }
+            } else {
+                if let Some((start, string)) = &number {
+                    // End number
+                    numbers.push((*start, position, string.parse()?));
+                    number = None
+                }
+                if character == '*' {
+                    // Star
+                    stars.push((position, Vec::new()));
+                }
+            }
+        }
+        // End of line ends number
+        if let Some((start, string)) = number {
+            numbers.push((start, line.chars().count() - 1, string.parse()?));
+        }
+
+        // Check new stars against previous and new numbers
+        for (position, neighbors) in &mut stars {
+            for (start, end, number) in numbers.iter().chain(&previous_numbers) {
+                if (start.checked_sub(1).unwrap_or(0)..=*end).contains(position) {
+                    neighbors.push(*number);
+                }
+            }
+        }
+
+        // Check previous stars against new numbers
+        for (position, neighbors) in &mut previous_stars {
+            for (start, end, number) in &numbers {
+                if (start.checked_sub(1).unwrap_or(0)..=*end).contains(position) {
+                    neighbors.push(*number);
+                }
+            }
+
+            // Add gear ratio if star is a gear
+            if neighbors.len() == 2 {
+                sum += neighbors[0] * neighbors[1];
+            }
+        }
+
+        // Remember stars and numbers
+        previous_stars = stars;
+        previous_numbers = numbers;
+    }
+    Ok(sum.to_string())
+}
+
 #[cfg(test)]
 mod tests {
-    #[test]
-    fn test_part1() {
-        let input = "\
+    const INPUT: &str = "\
         467..114..\n\
         ...*......\n\
         ..35..633.\n\
@@ -82,8 +149,15 @@ mod tests {
         ..592.....\n\
         ......755.\n\
         ...$.*....\n\
-        .664.598.."
-            .to_string();
-        assert_eq!(&super::part1(input).unwrap(), "4361");
+        .664.598..";
+
+    #[test]
+    fn test_part1() {
+        assert_eq!(&super::part1(INPUT.to_string()).unwrap(), "4361");
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(&super::part2(INPUT.to_string()).unwrap(), "467835");
     }
 }
