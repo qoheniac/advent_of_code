@@ -84,6 +84,6 @@ mod tests {
         ...$.*....\n\
         .664.598.."
             .to_string();
-        assert_eq!(super::part1(input).unwrap(), "4361".to_string());
+        assert_eq!(&super::part1(input).unwrap(), "4361");
     }
 }

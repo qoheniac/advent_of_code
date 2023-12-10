@@ -62,7 +62,7 @@ mod tests {
             a1b2c3d4e5f\n\
             treb7uchet"
             .to_string();
-        assert_eq!(super::part1(input).unwrap(), "142".to_string());
+        assert_eq!(&super::part1(input).unwrap(), "142");
     }
 
     #[test]
@@ -76,6 +76,6 @@ mod tests {
             zoneight234\n\
             7pqrstsixteen"
             .to_string();
-        assert_eq!(super::part2(input).unwrap(), "281".to_string());
+        assert_eq!(&super::part2(input).unwrap(), "281");
     }
 }

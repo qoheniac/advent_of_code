@@ -62,11 +62,11 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        assert_eq!(super::part1(INPUT.to_string()).unwrap(), "8".to_string());
+        assert_eq!(&super::part1(INPUT.to_string()).unwrap(), "8");
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(super::part2(INPUT.to_string()).unwrap(), "2286".to_string());
+        assert_eq!(&super::part2(INPUT.to_string()).unwrap(), "2286");
     }
 }
