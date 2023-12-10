@@ -43,7 +43,7 @@ pub fn part1(input: String) -> crate::PuzzleResult {
         // Check if previous candidates are part numbers
         'candidate: for (start, end, number) in previous_candidates {
             for position in &symbol_positions {
-                if (start.checked_sub(1).unwrap_or(0)..=(end + 1)).contains(&position) {
+                if (start.checked_sub(1).unwrap_or(0)..=end).contains(&position) {
                     sum += number;
                     continue 'candidate;
                 }
@@ -54,7 +54,7 @@ pub fn part1(input: String) -> crate::PuzzleResult {
         previous_candidates = Vec::new();
         'candidate: for (start, end, number) in candidates {
             for position in previous_symbol_positions.iter().chain(&symbol_positions) {
-                if (start.checked_sub(1).unwrap_or(0)..=(end + 1)).contains(&position) {
+                if (start.checked_sub(1).unwrap_or(0)..=end).contains(&position) {
                     sum += number;
                     continue 'candidate;
                 }
