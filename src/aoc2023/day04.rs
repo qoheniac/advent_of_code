@@ -3,8 +3,6 @@
 //! Each line holds a card with two lists of numbers and it's important how many
 //! of the numbers in the second list match numbers in the first list.
 
-use std::collections::VecDeque;
-
 /// Part 1: Total points
 ///
 /// On each line the first match is worth one point and every further match
@@ -39,7 +37,7 @@ pub fn part1(input: String) -> crate::PuzzleResult {
 /// has matches.
 pub fn part2(input: String) -> crate::PuzzleResult {
     let mut total = 0;
-    let mut following_copies = VecDeque::new();
+    let mut following_copies = std::collections::VecDeque::new();
     for line in input.lines() {
         if let Some((winning, numbers)) = line
             .split_once(": ")
