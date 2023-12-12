@@ -1,4 +1,12 @@
 //! Day 5: If You Give A Seed A Fertilizer
+//!
+//! The first line lists some seed numbers and the blocks of lines after that
+//! describe mappings consisting of a set of ranges that map numbers by a
+//! certain distance. The ranges are described by three numbers where the first
+//! one is the start of the destination range, the second one is the start of
+//! the source range, and the last one is the length of the ranges. If no range
+//! applies, numbers stay unchanged. Successively applying all maps to the seed
+//! numbers gives the respective location numbers
 
 // Range of numbers mapping some distance in positive or negative direction
 struct MapRange {
