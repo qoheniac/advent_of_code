@@ -14,6 +14,13 @@
 //! smallest velocity to reach further than d is the next integer larger than v-
 //! and the largest one is the next integer smaller than v+.
 
+fn ways((time, distance): (f64, f64)) -> usize {
+    let sqrt = (time * time / 4.0 - distance).sqrt();
+    let min = (time / 2.0 - sqrt).floor() as usize + 1;
+    let max = (time / 2.0 + sqrt).ceil() as usize - 1;
+    1 + max - min
+}
+
 /// Part 1: Product of ways to reach further than the given distance in the
 /// given time over all input columns
 pub fn part1(input: String) -> crate::PuzzleResult {
@@ -25,25 +32,42 @@ pub fn part1(input: String) -> crate::PuzzleResult {
     });
     let times = lines.next().ok_or("times not found")?;
     let distances = lines.next().ok_or("distances not found")?;
-    let mut product = 1;
-    for (time, distance) in times.zip(distances) {
-        let sqrt = (time * time / 4.0 - distance).sqrt();
-        let min = (time / 2.0 - sqrt).floor() as usize + 1;
-        let max = (time / 2.0 + sqrt).ceil() as usize - 1;
-        let ways = 1 + max - min;
-        product *= ways;
-    }
+    let product: usize = times.zip(distances).map(ways).product();
     Ok(product.to_string())
+}
+
+/// Part 2: Ways to reach further than the given distance in the given time
+/// where the numbers are found by ignoring any whitespace
+pub fn part2(input: String) -> crate::PuzzleResult {
+    let mut lines = input
+        .lines()
+        .map(|line| {
+            line.split_whitespace()
+                .skip(1)
+                .collect::<String>()
+                .parse::<f64>()
+                .ok()
+        })
+        .flatten();
+    let time = lines.next().ok_or("time not found")?;
+    let distance = lines.next().ok_or("distance not found")?;
+    let ways = ways((time, distance));
+    Ok(ways.to_string())
 }
 
 #[cfg(test)]
 mod tests {
+    const INPUT: &str = "\
+        Time:      7  15   30\n\
+        Distance:  9  40  200";
+
     #[test]
     fn test_part1() {
-        let input = "\
-            Time:      7  15   30\n\
-            Distance:  9  40  200"
-            .to_string();
-        assert_eq!(&super::part1(input).unwrap(), "288");
+        assert_eq!(&super::part1(INPUT.to_string()).unwrap(), "288");
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(&super::part2(INPUT.to_string()).unwrap(), "71503");
     }
 }
