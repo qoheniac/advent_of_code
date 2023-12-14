@@ -1,4 +1,4 @@
-//! Day 4: Scratchcards
+//! # Day 4: Scratchcards
 //!
 //! Each line holds a card with two lists of numbers and it's important how many
 //! of the numbers in the second list match numbers in the first list.

@@ -1,4 +1,4 @@
-//! Day 2: Cube Conundrum
+//! # Day 2: Cube Conundrum
 //!
 //! Each line holds a game ID number (like the 11 in Game 11: ...) followed by a
 //! semicolon-separated list of subsets of red, green, or blue cubes that were

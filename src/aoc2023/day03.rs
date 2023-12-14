@@ -1,4 +1,4 @@
-//! Day 3: Gear Ratios
+//! # Day 3: Gear Ratios
 //!
 //! Any number adjacent (horizontally, vertically, or diagonally) to a symbol
 //! that isn't a dot is a part number and any star that is adjacent to exactly

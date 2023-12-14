@@ -1,4 +1,4 @@
-//! Day 6: Wait For It
+//! # Day 6: Wait For It
 //!
 //! The first line has a list of integer times and the second line a list of
 //! integer distances. Setting up the velocity takes one time unit for each

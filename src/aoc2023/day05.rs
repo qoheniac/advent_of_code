@@ -1,4 +1,4 @@
-//! Day 5: If You Give A Seed A Fertilizer
+//! # Day 5: If You Give A Seed A Fertilizer
 //!
 //! The first line lists some seed numbers and the blocks of lines after that
 //! describe mappings consisting of a set of ranges that map numbers by a

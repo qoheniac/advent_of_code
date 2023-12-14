@@ -1,4 +1,4 @@
-//! Day 1: Trebuchet?!
+//! # Day 1: Trebuchet?!
 //!
 //! First and last digit of each line form the calibration value. Find the sum
 //! of all calibration values.

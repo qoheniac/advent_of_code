@@ -1,11 +1,11 @@
-//! [Advent of Code](https://adventofcode.com/) solutions
+//! # [Advent of Code](https://adventofcode.com/) solutions
 
 #![warn(missing_docs)]
 
 use chrono::{Datelike, Utc};
 use reqwest::blocking::Client;
 
-/// Solutions for 2023
+/// # Solutions for 2023
 pub mod aoc2023 {
     pub mod day01;
     pub mod day02;
