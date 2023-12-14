@@ -7,7 +7,7 @@
 //! distance that should be reached. The velocity v necessary to reach exactly
 //! the distance d is
 //!
-//!     d = v (t - v)   =>   v± = t/2 ± sqrt(t²/4 - d)
+//! >   d = v (t - v)   =>   v± = t/2 ± sqrt(t²/4 - d)
 //!
 //! Every velocity between these two velocity solutions will result in a
 //! distance larger than d. Because only integer velocities are allowed, the
@@ -37,7 +37,7 @@ pub fn part1(input: String) -> crate::PuzzleResult {
 }
 
 /// Part 2: Ways to reach further than the given distance in the given time
-/// where the numbers are found by ignoring any whitespace
+/// where numbers are found by ignoring whitespace
 pub fn part2(input: String) -> crate::PuzzleResult {
     let mut lines = input
         .lines()
