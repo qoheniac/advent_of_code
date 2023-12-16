@@ -8,6 +8,7 @@ use reqwest::blocking::Client;
 /// # Solutions for 2022
 pub mod aoc2022 {
     pub mod day01;
+    pub mod day02;
 }
 
 /// # Solutions for 2023
@@ -48,6 +49,8 @@ pub fn solve(year: usize, day: usize, part: usize, input: String) -> PuzzleResul
     match (year, day, part) {
         (2022, 1, 1) => aoc2022::day01::part1(input),
         (2022, 1, 2) => aoc2022::day01::part2(input),
+        (2022, 2, 1) => aoc2022::day02::part1(input),
+        (2022, 2, 2) => aoc2022::day02::part2(input),
         (2023, 1, 1) => aoc2023::day01::part1(input),
         (2023, 1, 2) => aoc2023::day01::part2(input),
         (2023, 2, 1) => aoc2023::day02::part1(input),
