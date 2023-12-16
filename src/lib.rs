@@ -13,6 +13,7 @@ use reqwest::blocking::Client;
 pub mod aoc2022 {
     pub mod day01;
     pub mod day02;
+    pub mod day03;
 }
 
 /// # Solutions for 2023
@@ -57,6 +58,9 @@ pub fn solve(year: usize, day: usize, part: usize, input: String) -> PuzzleResul
         (2022, 1, 2) => aoc2022::day01::part2(input),
         (2022, 2, 1) => aoc2022::day02::part1(input),
         (2022, 2, 2) => aoc2022::day02::part2(input),
+        (2022, 3, 1) => aoc2022::day03::part1(input),
+        (2022, 3, 2) => aoc2022::day03::part2(input),
+
         (2023, 1, 1) => aoc2023::day01::part1(input),
         (2023, 1, 2) => aoc2023::day01::part2(input),
         (2023, 2, 1) => aoc2023::day02::part1(input),
@@ -71,6 +75,7 @@ pub fn solve(year: usize, day: usize, part: usize, input: String) -> PuzzleResul
         (2023, 6, 2) => aoc2023::day06::part2(input),
         (2023, 7, 1) => aoc2023::day07::part1(input),
         (2023, 7, 2) => aoc2023::day07::part2(input),
+
         (year, day, part) => Err(format!("no solution for day {day} part {part} of {year}"))?,
     }
 }
