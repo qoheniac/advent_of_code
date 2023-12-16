@@ -1,4 +1,6 @@
 //! # Day 2: Rock Paper Scissors
+//!
+//! [puzzle site](https://adventofcode.com/2022/day/2)
 
 use std::collections::HashMap;
 

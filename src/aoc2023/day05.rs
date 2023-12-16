@@ -8,6 +8,8 @@
 //! applies, numbers stay unchanged. Successively applying all maps to the seed
 //! numbers gives the respective location numbers where only the lowest one is
 //! of interest.
+//!
+//! [puzzle site](https://adventofcode.com/2023/day/5)
 
 // Range of numbers mapping some distance in positive or negative direction
 struct MapRange {

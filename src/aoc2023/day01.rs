@@ -2,6 +2,8 @@
 //!
 //! First and last digit of each line form the calibration value. Find the sum
 //! of all calibration values.
+//!
+//! [puzzle site](https://adventofcode.com/2023/day/1)
 
 /// Part 1: Digits are single numerical characters
 pub fn part1(input: String) -> crate::PuzzleResult {

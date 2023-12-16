@@ -2,6 +2,8 @@
 //!
 //! Each line holds a card with two lists of numbers and it's important how many
 //! of the numbers in the second list match numbers in the first list.
+//!
+//! [puzzle site](https://adventofcode.com/2023/day/4)
 
 /// Part 1: Total points
 ///

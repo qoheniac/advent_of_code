@@ -5,6 +5,8 @@
 //! their kinds and whenever they are the same kind then by comparing their
 //! cards first to last. The solution is the sum of all bids multiplied by their
 //! rank.
+//!
+//! [puzzle site](https://adventofcode.com/2023/day/7)
 
 #[derive(Clone, Eq, Hash, Ord, PartialOrd, PartialEq)]
 enum Card {

@@ -1,4 +1,6 @@
-//! # [Advent of Code](https://adventofcode.com/) solutions
+//! # Advent of Code Solutions
+//!
+//! [puzzle site](https://adventofcode.com)
 
 #![warn(missing_docs)]
 
@@ -6,12 +8,16 @@ use chrono::{Datelike, Utc};
 use reqwest::blocking::Client;
 
 /// # Solutions for 2022
+///
+/// [puzzle site](https://adventofcode.com/2022)
 pub mod aoc2022 {
     pub mod day01;
     pub mod day02;
 }
 
 /// # Solutions for 2023
+///
+/// [puzzle site](https://adventofcode.com/2023)
 pub mod aoc2023 {
     pub mod day01;
     pub mod day02;

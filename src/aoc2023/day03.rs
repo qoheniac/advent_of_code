@@ -4,6 +4,8 @@
 //! that isn't a dot is a part number and any star that is adjacent to exactly
 //! two part numbers is a gear with a gear ratio that is the product of the
 //! adjacent part numbers.
+//!
+//! [puzzle site](https://adventofcode.com/2023/day/3)
 
 /// Part 1: Sum up all part numbers
 pub fn part1(input: String) -> crate::PuzzleResult {

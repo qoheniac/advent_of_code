@@ -15,6 +15,8 @@
 //! the smallest velocity to reach further than \\(d\\) is the next integer
 //! larger than \\(v_-\\) and the largest one is the next integer smaller than
 //! \\(v_+\\).
+//!
+//! [puzzle site](https://adventofcode.com/2023/day/6)
 
 fn ways((time, distance): (f64, f64)) -> usize {
     let sqrt = (time * time / 4.0 - distance).sqrt();

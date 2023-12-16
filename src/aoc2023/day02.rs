@@ -3,6 +3,8 @@
 //! Each line holds a game ID number (like the 11 in Game 11: ...) followed by a
 //! semicolon-separated list of subsets of red, green, or blue cubes that were
 //! revealed from a bag (like 3 red, 5 green, 4 blue).
+//!
+//! [puzzle site](https://adventofcode.com/2023/day/2)
 
 /// Part 1: Sum up IDs of possible games if the bag contained 12 red, 13 green,
 /// and 14 blue cubes

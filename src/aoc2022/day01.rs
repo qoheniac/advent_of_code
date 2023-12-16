@@ -1,4 +1,6 @@
 //! # Day 1: Calorie Counting
+//!
+//! [puzzle site](https://adventofcode.com/2022/day/1)
 
 /// Part 1
 pub fn part1(input: String) -> crate::PuzzleResult {
