@@ -173,12 +173,7 @@ pub fn part2(input: String) -> crate::PuzzleResult {
 
 #[cfg(test)]
 mod tests {
-    const INPUT: &str = "\
-        32T3K 765\n\
-        T55J5 684\n\
-        KK677 28\n\
-        KTJJT 220\n\
-        QQQJA 483";
+    const INPUT: &str = "32T3K 765\nT55J5 684\nKK677 28\nKTJJT 220\nQQQJA 483";
 
     #[test]
     fn test_part1() {

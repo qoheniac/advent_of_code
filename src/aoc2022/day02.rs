@@ -45,10 +45,7 @@ pub fn part2(input: String) -> crate::PuzzleResult {
 
 #[cfg(test)]
 mod tests {
-    const INPUT: &str = "\
-        A Y\n\
-        B X\n\
-        C Z";
+    const INPUT: &str = "A Y\nB X\nC Z";
 
     #[test]
     fn test_part1() {

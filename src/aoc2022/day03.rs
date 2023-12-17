@@ -51,13 +51,14 @@ pub fn part2(input: String) -> crate::PuzzleResult {
 
 #[cfg(test)]
 mod tests {
-    const INPUT: &str = "\
-        vJrwpWtwJgWrhcsFMMfFFhFp\n\
-        jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL\n\
-        PmmdzqPrVvPwwTWBwg\n\
-        wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn\n\
-        ttgJtRGJQctTZtZT\n\
-        CrZsJsPPZsGzwwsLwLmpwMDw";
+    const INPUT: &str = concat!(
+        "vJrwpWtwJgWrhcsFMMfFFhFp\n",
+        "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL\n",
+        "PmmdzqPrVvPwwTWBwg\n",
+        "wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn\n",
+        "ttgJtRGJQctTZtZT\n",
+        "CrZsJsPPZsGzwwsLwLmpwMDw"
+    );
 
     #[test]
     fn test_part1() {

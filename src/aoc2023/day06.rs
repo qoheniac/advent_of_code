@@ -61,9 +61,7 @@ pub fn part2(input: String) -> crate::PuzzleResult {
 
 #[cfg(test)]
 mod tests {
-    const INPUT: &str = "\
-        Time:      7  15   30\n\
-        Distance:  9  40  200";
+    const INPUT: &str = "Time:      7  15   30\nDistance:  9  40  200";
 
     #[test]
     fn test_part1() {

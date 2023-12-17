@@ -36,21 +36,7 @@ pub fn part2(input: String) -> crate::PuzzleResult {
 
 #[cfg(test)]
 mod tests {
-    const INPUT: &str = "\
-        1000\n\
-        2000\n\
-        3000\n\
-            \n\
-        4000\n\
-            \n\
-        5000\n\
-        6000\n\
-            \n\
-        7000\n\
-        8000\n\
-        9000\n\
-            \n\
-        10000";
+    const INPUT: &str = "1000\n2000\n3000\n\n4000\n\n5000\n6000\n\n7000\n8000\n9000\n\n10000";
 
     #[test]
     fn test_part1() {
