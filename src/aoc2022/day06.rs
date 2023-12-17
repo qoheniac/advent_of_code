@@ -1,4 +1,6 @@
-//! Day 6: Tuning Trouble
+//! # Day 6: Tuning Trouble
+//!
+//! [puzzle site](https://adventofcode.com/2022/day/6)
 
 fn solution(input: String, marker_size: usize) -> crate::PuzzleResult {
     let mut characters = input.chars();
