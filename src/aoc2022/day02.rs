@@ -4,6 +4,14 @@
 
 use std::collections::HashMap;
 
+fn outcome(difference: i32) -> i32 {
+    match difference {
+        0 => 3, // draw
+        1 => 6, // win
+        _ => 0, // loose
+    }
+}
+
 /// Part 1
 pub fn part1(input: String) -> crate::PuzzleResult {
     let action_index =
@@ -14,11 +22,7 @@ pub fn part1(input: String) -> crate::PuzzleResult {
         let action_index_1 = action_index.get(actions.next().unwrap()).unwrap();
         let action_index_2 = action_index.get(actions.next().unwrap()).unwrap();
         score += action_index_2 + 1; // shape score
-        score += match (action_index_2 - action_index_1).rem_euclid(3) {
-            0 => 3, // draw
-            1 => 6, // win
-            _ => 0, // loose
-        };
+        score += outcome((action_index_2 - action_index_1).rem_euclid(3));
     }
     Ok(score.to_string())
 }
@@ -31,14 +35,10 @@ pub fn part2(input: String) -> crate::PuzzleResult {
     for round in input.lines() {
         let mut actions = round.split_whitespace();
         let action_index_1 = action_index.get(actions.next().unwrap()).unwrap();
-        let action_index_difference = result_index.get(actions.next().unwrap()).unwrap();
+        let action_index_difference = *result_index.get(actions.next().unwrap()).unwrap();
         let action_index_2 = (action_index_1 + action_index_difference).rem_euclid(3);
         score += action_index_2 + 1; // shape score
-        score += match action_index_difference {
-            0 => 3, // draw
-            1 => 6, // win
-            _ => 0, // loose
-        };
+        score += outcome(action_index_difference);
     }
     Ok(score.to_string())
 }
