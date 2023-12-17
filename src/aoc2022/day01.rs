@@ -2,18 +2,20 @@
 //!
 //! [puzzle site](https://adventofcode.com/2022/day/1)
 
+fn calories(elf: &str) -> i32 {
+    let mut sum = 0;
+    for line in elf.lines() {
+        let calories: i32 = line.parse().unwrap();
+        sum += calories;
+    }
+    sum
+}
+
 /// Part 1
 pub fn part1(input: String) -> crate::PuzzleResult {
     let mut max_calories = 0;
     for elf in input.split("\n\n") {
-        let mut sum = 0;
-        for line in elf.lines() {
-            let calories: i32 = line.parse().unwrap();
-            sum += calories;
-        }
-        if sum > max_calories {
-            max_calories = sum;
-        }
+        max_calories = max_calories.max(calories(elf));
     }
     Ok(max_calories.to_string())
 }
@@ -22,12 +24,7 @@ pub fn part1(input: String) -> crate::PuzzleResult {
 pub fn part2(input: String) -> crate::PuzzleResult {
     let mut top_calories = vec![0, 0, 0];
     for elf in input.split("\n\n") {
-        let mut sum = 0;
-        for line in elf.lines() {
-            let calories: i32 = line.parse().unwrap();
-            sum += calories;
-        }
-        top_calories.push(sum);
+        top_calories.push(calories(elf));
         top_calories.sort();
         top_calories.remove(0);
     }
