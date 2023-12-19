@@ -7,7 +7,7 @@
 //!
 //! [puzzle site](https://adventofcode.com/2023/day/8)
 
-use num::Integer;
+use num::Integer; // lowest common multiple
 use regex::Regex;
 
 type Instructions<'a> = std::iter::Cycle<std::str::Chars<'a>>;
