@@ -74,7 +74,7 @@ impl Hand {
             2 if counts[1] == 2 => TwoPair,
             2 => OnePair,
             1 => HighCard,
-            c => panic!("count of {c} should be impossible"),
+            c => unreachable!("count of {c} should be impossible"),
         }
     }
 }
