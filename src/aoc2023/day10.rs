@@ -4,6 +4,8 @@
 //!
 //! [puzzle site](https://adventofcode.com/2023/day/10)
 
+use num::Integer; // check whether number is odd
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum Direction {
     Down,
@@ -25,7 +27,7 @@ impl Direction {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 enum Tile {
     BendNE,
     BendNW,
@@ -120,32 +122,32 @@ impl Grid {
     }
     fn try_fitting_tile(&mut self, (i, j): (usize, usize)) -> Result<State, String> {
         let original_tile = self.tiles[i][j];
-        // try all tiles
+        // Try all tiles
         for tile in TILES {
             self.tiles[i][j] = tile;
-            // try all directions
+            // Try all directions
             for direction in DIRECTIONS {
                 let state = State {
                     location: (i, j),
                     direction,
                 };
-                // check if direction fits tile
+                // Check if direction fits tile
                 if let Ok(turned_around) = self.try_turn_around(state) {
-                    // check if neighbors are reachable
+                    // Check if neighbors are reachable
                     if self.try_step(state).is_ok() && self.try_step(turned_around).is_ok() {
                         return Ok(state);
                     }
                 }
             }
         }
-        // reset tile if no fitting tile was found
+        // Reset tile if no fitting tile was found
         self.tiles[i][j] = original_tile;
         Err(format!("no tile fits at ({i}, {j})"))
     }
 }
 
-fn parse_input(input: String) -> Result<(Grid, State), String> {
-    // fill grid and find start location
+fn parse_input(input: String) -> Result<(Grid, Vec<State>), String> {
+    // Fill grid and find start location
     let mut tiles = Vec::new();
     let mut start_location = None;
     for (i, line) in input.lines().enumerate() {
@@ -167,22 +169,52 @@ fn parse_input(input: String) -> Result<(Grid, State), String> {
         width,
         height,
     };
-    // replace starting tile and get initial state
-    let state = grid.try_fitting_tile(start_location.ok_or("start not found")?)?;
-    Ok((grid, state))
+    // Replace starting tile with fitting tile and get intial state
+    let original_state = grid.try_fitting_tile(start_location.ok_or("start not found")?)?;
+
+    // Collect states along the pipe
+    let mut pipe = vec![original_state];
+    loop {
+        let state = grid.try_step(pipe.last().unwrap().clone())?;
+        if state == original_state {
+            return Ok((grid, pipe));
+        }
+        pipe.push(state);
+    }
 }
 
-/// Part 1: Half length of the loop
+/// Part 1: Half length of the pipe
 pub fn part1(input: String) -> crate::PuzzleResult {
-    let (grid, original_state) = parse_input(input)?;
-    let mut state = original_state.clone();
-    for i in 1.. {
-        state = grid.try_step(state)?;
-        if state == original_state {
-            return Ok((i / 2).to_string());
+    Ok((parse_input(input)?.1.len() / 2).to_string())
+}
+
+/// Part 2: Points enclosed by the pipe
+pub fn part2(input: String) -> crate::PuzzleResult {
+    let (grid, pipe) = parse_input(input)?;
+    let locations: Vec<(usize, usize)> = pipe.iter().map(|state| state.location).collect();
+    let mut inside_count = 0;
+    for i in 0..grid.height {
+        for j in 0..grid.width {
+            // skip tiles on the pipe
+            if locations.contains(&(i, j)) {
+                continue;
+            }
+            // diagonal ray casting to avoid going parallel to pipe
+            let length = (grid.height - i).min(grid.width - j);
+            let mut crossings_count = 0;
+            for d in 1..length {
+                let (m, n) = (i + d, j + d);
+                // count crossing if pipe does not bend away from ray
+                if ![BendNE, BendSW].contains(&grid.tiles[m][n]) && locations.contains(&(m, n)) {
+                    crossings_count += 1;
+                }
+            }
+            if crossings_count.is_odd() {
+                inside_count += 1;
+            }
         }
     }
-    unreachable!()
+    Ok(inside_count.to_string())
 }
 
 #[cfg(test)]
@@ -193,9 +225,54 @@ mod tests {
             ".....\n.S-7.\n.|.|.\n.L-J.\n.....",
             "..F7.\n.FJ|.\nSJ.L7\n|F--J\nLJ...",
         ];
-        const RESULTS: [&str; 2] = ["4", "8"];
-        for i in 0..2 {
+        const RESULTS: [&str; INPUTS.len()] = ["4", "8"];
+        for i in 0..INPUTS.len() {
             assert_eq!(&super::part1(INPUTS[i].to_string()).unwrap(), RESULTS[i]);
+        }
+    }
+
+    #[test]
+    fn test_part2() {
+        const INPUTS: [&str; 3] = [
+            concat!(
+                "...........\n",
+                ".S-------7.\n",
+                ".|F-----7|.\n",
+                ".||.....||.\n",
+                ".||.....||.\n",
+                ".|L-7.F-J|.\n",
+                ".|..|.|..|.\n",
+                ".L--J.L--J.\n",
+                "..........."
+            ),
+            concat!(
+                ".F----7F7F7F7F-7....\n",
+                ".|F--7||||||||FJ....\n",
+                ".||.FJ||||||||L7....\n",
+                "FJL7L7LJLJ||LJ.L-7..\n",
+                "L--J.L7...LJS7F-7L7.\n",
+                "....F-J..F7FJ|L7L7L7\n",
+                "....L7.F7||L7|.L7L7|\n",
+                ".....|FJLJ|FJ|F7|.LJ\n",
+                "....FJL-7.||.||||...\n",
+                "....L---J.LJ.LJLJ..."
+            ),
+            concat!(
+                "FF7FSF7F7F7F7F7F---7\n",
+                "L|LJ||||||||||||F--J\n",
+                "FL-7LJLJ||||||LJL-77\n",
+                "F--JF--7||LJLJ7F7FJ-\n",
+                "L---JF-JLJ.||-FJLJJ7\n",
+                "|F|F-JF---7F7-L7L|7|\n",
+                "|FFJF7L7F-JF7|JL---7\n",
+                "7-L-JL7||F7|L7F-7F7|\n",
+                "L.L7LFJ|||||FJL7||LJ\n",
+                "L7JLJL-JLJLJL--JLJ.L"
+            ),
+        ];
+        const RESULTS: [&str; INPUTS.len()] = ["4", "8", "10"];
+        for i in 0..INPUTS.len() {
+            assert_eq!(&super::part2(INPUTS[i].to_string()).unwrap(), RESULTS[i]);
         }
     }
 }
