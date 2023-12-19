@@ -61,8 +61,8 @@ mod tests {
     #[test]
     fn test_part2() {
         const INPUTS: [&str; 2] = [INPUT, "R 5\nU 8\nL 8\nD 3\nR 17\nD 10\nL 25\nU 20"];
-        const RESULTS: [&str; 2] = ["1", "36"];
-        for i in 0..2 {
+        const RESULTS: [&str; INPUTS.len()] = ["1", "36"];
+        for i in 0..INPUTS.len() {
             assert_eq!(&super::part2(INPUTS[i].to_string()).unwrap(), RESULTS[i]);
         }
     }

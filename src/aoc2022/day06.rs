@@ -55,16 +55,16 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        const RESULTS: [&str; 5] = ["7", "5", "6", "10", "11"];
-        for i in 0..5 {
+        const RESULTS: [&str; INPUTS.len()] = ["7", "5", "6", "10", "11"];
+        for i in 0..INPUTS.len() {
             assert_eq!(&super::part1(INPUTS[i].to_string()).unwrap(), RESULTS[i]);
         }
     }
 
     #[test]
     fn test_part2() {
-        const RESULTS: [&str; 5] = ["19", "23", "23", "29", "26"];
-        for i in 0..5 {
+        const RESULTS: [&str; INPUTS.len()] = ["19", "23", "23", "29", "26"];
+        for i in 0..INPUTS.len() {
             assert_eq!(&super::part2(INPUTS[i].to_string()).unwrap(), RESULTS[i]);
         }
     }

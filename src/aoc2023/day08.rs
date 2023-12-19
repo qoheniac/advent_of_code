@@ -109,8 +109,8 @@ mod tests {
                 "ZZZ = (ZZZ, ZZZ)"
             ),
         ];
-        const RESULTS: [&str; 2] = ["2", "6"];
-        for i in 0..2 {
+        const RESULTS: [&str; INPUTS.len()] = ["2", "6"];
+        for i in 0..INPUTS.len() {
             assert_eq!(&super::part1(INPUTS[i].to_string()).unwrap(), RESULTS[i]);
         }
     }
