@@ -19,7 +19,7 @@ fn count_between(vector: &Vec<bool>, start: usize, end: usize) -> usize {
     vector[start..end].iter().filter(|&&b| b).count()
 }
 
-fn solution<const AGE: usize>(input: String) -> crate::PuzzleResult {
+fn solution(input: String, age: usize) -> crate::PuzzleResult {
     let mut rows = 0;
     let mut cols = 0;
     let mut galaxies = Vec::new();
@@ -44,20 +44,20 @@ fn solution<const AGE: usize>(input: String) -> crate::PuzzleResult {
         let (top, bottom) = sort_pair((row1, row2));
         let (left, right) = sort_pair((col1, col2));
         sum += bottom - top + right - left
-            + count_between(&is_row_empty, top, bottom) * (AGE - 1)
-            + count_between(&is_col_empty, left, right) * (AGE - 1);
+            + count_between(&is_row_empty, top, bottom) * (age - 1)
+            + count_between(&is_col_empty, left, right) * (age - 1);
     }
     Ok(sum.to_string())
 }
 
 /// Part 1: Empty rows and columns expand by two
 pub fn part1(input: String) -> crate::PuzzleResult {
-    solution::<2>(input)
+    solution(input, 2)
 }
 
 /// Part 2: Empty rows and columns expand by a million
 pub fn part2(input: String) -> crate::PuzzleResult {
-    solution::<1000000>(input)
+    solution(input, 1000000)
 }
 
 #[cfg(test)]
@@ -75,18 +75,18 @@ mod tests {
         "#...#....."
     );
 
-    fn test<const AGE: usize>(result: &str) {
-        assert_eq!(&super::solution::<AGE>(INPUT.to_string()).unwrap(), result);
+    fn test(age: usize, result: &str) {
+        assert_eq!(&super::solution(INPUT.to_string(), age).unwrap(), result);
     }
 
     #[test]
     fn test_part1() {
-        test::<2>("374");
+        test(2, "374");
     }
 
     #[test]
     fn test_part2() {
-        test::<10>("1030");
-        test::<100>("8410");
+        test(10, "1030");
+        test(100, "8410");
     }
 }
