@@ -41,7 +41,7 @@ fn arrangements(statuses: Vec<Status>, lengths: &[usize]) -> usize {
             if statuses[i..after_group].contains(&Operational) {
                 if statuses[i] == Damaged {
                     // Should have been a match
-                    return sum; // No further arrangements possible
+                    break; // No further arrangements possible
                 } else {
                     continue; // Moving on
                 }
@@ -58,7 +58,7 @@ fn arrangements(statuses: Vec<Status>, lengths: &[usize]) -> usize {
             if statuses[after_group] == Damaged {
                 if statuses[i] == Damaged {
                     // Should have been a match
-                    return sum; // No further arrangements possible
+                    break; // No further arrangements possible
                 } else {
                     continue; // Moving on
                 }
@@ -68,7 +68,7 @@ fn arrangements(statuses: Vec<Status>, lengths: &[usize]) -> usize {
             next_statuses[0] = Operational;
             sum += arrangements(next_statuses, next_lengths);
             if statuses[i] == Damaged {
-                return sum; // No further arrangements possible
+                break; // No further arrangements possible
             }
         }
         sum
