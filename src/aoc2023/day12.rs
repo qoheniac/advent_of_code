@@ -99,6 +99,11 @@ pub fn part1(input: String) -> crate::PuzzleResult {
     solution(input, 1)
 }
 
+/// Part 2: Fold five times
+pub fn part2(input: String) -> crate::PuzzleResult {
+    solution(input, 5)
+}
+
 #[cfg(test)]
 mod tests {
     const INPUT: &str = concat!(
@@ -113,5 +118,10 @@ mod tests {
     #[test]
     fn test_part1() {
         assert_eq!(&super::part1(INPUT.to_string()).unwrap(), "21");
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(&super::part2(INPUT.to_string()).unwrap(), "525152");
     }
 }
