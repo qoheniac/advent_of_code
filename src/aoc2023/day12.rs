@@ -28,7 +28,7 @@ impl Status {
     }
 }
 
-fn arrangements(statuses: Vec<Status>, lengths: &[usize]) -> usize {
+fn arrangements(statuses: &[Status], lengths: &[usize]) -> usize {
     if let Some((&length, next_lengths)) = lengths.split_first() {
         let total_length = statuses.len();
         let other_length = next_lengths.iter().sum::<usize>() + next_lengths.len();
@@ -64,10 +64,18 @@ fn arrangements(statuses: Vec<Status>, lengths: &[usize]) -> usize {
                     continue; // Moving on
                 }
             }
-            // Match
-            let mut next_statuses = statuses[after_group..].to_vec();
-            next_statuses[0] = Operational;
-            sum += arrangements(next_statuses, next_lengths);
+            // Matching end
+            if after_group + 1 == total_length {
+                if next_lengths.is_empty() {
+                    // Last Group
+                    sum += 1; // Arrangement found
+                    if length == 1 && statuses[after_group] == Unknown {
+                        sum += 1 // Swapping places gives another arrangement
+                    }
+                }
+                break;
+            }
+            sum += arrangements(&statuses[(after_group + 1)..], next_lengths);
             if statuses[i] == Damaged {
                 break; // No further arrangements possible
             }
@@ -90,7 +98,7 @@ fn solution(input: String, repeat: usize) -> crate::PuzzleResult {
             .split(",")
             .map(|number| number.parse())
             .collect::<Result<Vec<usize>, _>>()?;
-        sum += arrangements(statuses, &lengths);
+        sum += arrangements(&statuses, &lengths);
     }
     Ok(sum.to_string())
 }
