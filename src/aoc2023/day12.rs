@@ -31,11 +31,12 @@ impl Status {
 fn arrangements(statuses: Vec<Status>, lengths: &[usize]) -> usize {
     if let Some((&length, next_lengths)) = lengths.split_first() {
         let total_length = statuses.len();
-        if length > total_length {
+        let other_length = next_lengths.iter().sum::<usize>() + next_lengths.len();
+        if length + other_length > total_length {
             return 0;
         }
         let mut sum = 0;
-        for i in 0..(total_length + 1 - length) {
+        for i in 0..(total_length + 1 - length - other_length) {
             let after_group = i + length;
             // No match
             if statuses[i..after_group].contains(&Operational) {
