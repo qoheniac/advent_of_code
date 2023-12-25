@@ -76,8 +76,9 @@ fn arrangements_with_cache(
                 if next_lengths.is_empty() {
                     // Last Group
                     sum += 1; // Arrangement found
-                    if length == 1 && statuses[after_group] == Unknown {
-                        sum += 1 // Swapping places gives another arrangement
+                    if statuses[i] == statuses[after_group] {
+                        // Begins with unknown and is followed by unknown status
+                        sum += 1 // Shifting by one gives another arrangement
                     }
                 }
                 break;
