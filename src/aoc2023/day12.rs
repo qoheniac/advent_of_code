@@ -28,7 +28,14 @@ impl Status {
     }
 }
 
-fn arrangements(statuses: &[Status], lengths: &[usize]) -> usize {
+fn arrangements_with_cache(
+    statuses: &[Status],
+    lengths: &[usize],
+    cache: &mut std::collections::HashMap<(usize, usize), usize>,
+) -> usize {
+    if let Some(&sum) = cache.get(&(statuses.len(), lengths.len())) {
+        return sum;
+    }
     if let Some((&length, next_lengths)) = lengths.split_first() {
         let total_length = statuses.len();
         let other_length = next_lengths.iter().sum::<usize>() + next_lengths.len();
@@ -75,15 +82,20 @@ fn arrangements(statuses: &[Status], lengths: &[usize]) -> usize {
                 }
                 break;
             }
-            sum += arrangements(&statuses[(after_group + 1)..], next_lengths);
+            sum += arrangements_with_cache(&statuses[(after_group + 1)..], next_lengths, cache);
             if statuses[i] == Damaged {
                 break; // No further arrangements possible
             }
         }
+        cache.insert((statuses.len(), lengths.len()), sum);
         sum
     } else {
         !statuses.contains(&Damaged) as usize
     }
+}
+
+fn arrangements(statuses: &[Status], lengths: &[usize]) -> usize {
+    arrangements_with_cache(&statuses, &lengths, &mut std::collections::HashMap::new())
 }
 
 fn solution(input: String, repeat: usize) -> crate::PuzzleResult {
