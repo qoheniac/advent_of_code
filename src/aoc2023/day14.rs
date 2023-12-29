@@ -8,65 +8,83 @@
 //!
 //! [puzzle site](https://adventofcode.com/2023/day/14)
 
-#[derive(Clone, Copy)]
-struct Chain {
-    start: usize,
-    length: usize,
+use ndarray::Array2;
+
+enum Field {
+    Ball,
+    Cube,
+    Space,
+}
+use Field::*;
+
+struct Platform(Array2<Field>);
+
+impl Platform {
+    fn load(&self) -> usize {
+        let mut sum = 0;
+        for column in self.0.columns() {
+            for (row, field) in column.iter().enumerate() {
+                if let Ball = field {
+                    sum += self.0.nrows() - row;
+                }
+            }
+        }
+        sum
+    }
+
+    fn tilt_north(&mut self) {
+        let rows = self.0.nrows();
+        for mut column in self.0.columns_mut() {
+            let mut start = 0;
+            let mut count = 0;
+            for i in 0..rows {
+                match column[i] {
+                    Space => (),
+                    Ball => count += 1,
+                    Cube => {
+                        for k in start..i {
+                            column[k] = if k - start < count { Ball } else { Space };
+                        }
+                        start = i + 1;
+                        count = 0;
+                    }
+                }
+            }
+            for k in start..rows {
+                column[k] = if k - start < count { Ball } else { Space };
+            }
+        }
+    }
 }
 
-impl Chain {
-    fn load(&self, height: usize) -> usize {
-        (1 + 2 * (height - self.start) - self.length) * self.length / 2
+impl std::str::FromStr for Platform {
+    type Err = Box<dyn std::error::Error>;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let mut fields = Vec::new();
+        let mut width = 0;
+        let mut height = 0;
+        for line in s.lines() {
+            height += 1;
+            width = 0;
+            for character in line.chars() {
+                width += 1;
+                fields.push(match character {
+                    'O' => Ball,
+                    '#' => Cube,
+                    '.' => Space,
+                    c => Err(format!("unexpected character {c}"))?,
+                })
+            }
+        }
+        Ok(Platform(Array2::from_shape_vec((height, width), fields)?))
     }
 }
 
 /// Part 1: Tilt north
 pub fn part1(input: String) -> crate::PuzzleResult {
-    let mut lines = input.lines();
-    let mut chains = Vec::new();
-    let mut chains_in_progress = Vec::new();
-    for character in lines.next().ok_or("empty input")?.chars() {
-        match character {
-            'O' => chains_in_progress.push(Chain {
-                start: 0,
-                length: 1,
-            }),
-            '#' => chains_in_progress.push(Chain {
-                start: 1,
-                length: 0,
-            }),
-            _ => chains_in_progress.push(Chain {
-                start: 0,
-                length: 0,
-            }),
-        }
-    }
-    let mut height = 1;
-    for line in lines {
-        height += 1;
-        for (column, character) in line.chars().enumerate() {
-            let chain = &mut chains_in_progress[column];
-            match character {
-                'O' => chain.length += 1,
-                '#' => {
-                    if chain.length > 0 {
-                        chains.push(*chain)
-                    }
-                    *chain = Chain {
-                        start: height,
-                        length: 0,
-                    };
-                }
-                _ => (),
-            }
-        }
-    }
-    chains.append(&mut chains_in_progress);
-    let mut sum = 0;
-    for chain in chains {
-        sum += chain.load(height);
-    }
-    Ok(sum.to_string())
+    let mut platform: Platform = input.parse()?;
+    platform.tilt_north();
+    Ok(platform.load().to_string())
 }
 
 #[cfg(test)]
