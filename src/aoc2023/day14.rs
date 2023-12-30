@@ -10,6 +10,7 @@
 
 use ndarray::Array2;
 
+#[derive(Eq, Hash, Clone, Copy, PartialEq)]
 enum Field {
     Ball,
     Cube,
@@ -17,6 +18,15 @@ enum Field {
 }
 use Field::*;
 
+enum Direction {
+    North,
+    West,
+    South,
+    East,
+}
+use Direction::*;
+
+#[derive(Eq, Hash, Clone, PartialEq)]
 struct Platform(Array2<Field>);
 
 impl Platform {
@@ -32,28 +42,56 @@ impl Platform {
         sum
     }
 
-    fn tilt_north(&mut self) {
-        let rows = self.0.nrows();
-        for mut column in self.0.columns_mut() {
-            let mut start = 0;
+    fn tilt(&mut self, direction: Direction) {
+        let end = match direction {
+            North | South => self.0.nrows(),
+            West | East => self.0.ncols(),
+        } as i32;
+        for mut line in match direction {
+            North | South => self.0.columns_mut(),
+            West | East => self.0.rows_mut(),
+        } {
+            let mut cube = match direction {
+                North | West => -1,
+                South | East => end,
+            };
             let mut count = 0;
-            for i in 0..rows {
-                match column[i] {
+            for mut position in 0..=end {
+                if let South | East = direction {
+                    position = end - position - 1;
+                }
+                match if !(0..end).contains(&position) {
+                    Cube
+                } else {
+                    line[position as usize]
+                } {
                     Space => (),
                     Ball => count += 1,
                     Cube => {
-                        for k in start..i {
-                            column[k] = if k - start < count { Ball } else { Space };
+                        // Sort balls and spaces between two cubes
+                        for index in match direction {
+                            North | West => (cube + 1)..position,
+                            South | East => (position + 1)..cube,
+                        } {
+                            line[index as usize] = if cube.abs_diff(index) <= count {
+                                Ball
+                            } else {
+                                Space
+                            };
                         }
-                        start = i + 1;
+                        cube = position;
                         count = 0;
                     }
                 }
             }
-            for k in start..rows {
-                column[k] = if k - start < count { Ball } else { Space };
-            }
         }
+    }
+
+    fn cycle(&mut self) {
+        self.tilt(North);
+        self.tilt(West);
+        self.tilt(South);
+        self.tilt(East);
     }
 }
 
@@ -83,7 +121,26 @@ impl std::str::FromStr for Platform {
 /// Part 1: Tilt north
 pub fn part1(input: String) -> crate::PuzzleResult {
     let mut platform: Platform = input.parse()?;
-    platform.tilt_north();
+    platform.tilt(North);
+    Ok(platform.load().to_string())
+}
+
+/// Part 2: Tilt north, west, south, and east a billion times
+pub fn part2(input: String) -> crate::PuzzleResult {
+    const CYCLES: usize = 1000000000;
+    let mut platform: Platform = input.parse()?;
+    let mut hashes = std::collections::HashMap::new();
+    for cycle in 0..CYCLES {
+        platform.cycle();
+        // Loop detection
+        if let Some(index) = hashes.get(&platform) {
+            for _ in 0..((CYCLES - cycle - 1) % (cycle - index)) {
+                platform.cycle();
+            }
+            break;
+        }
+        hashes.insert(platform.clone(), cycle);
+    }
     Ok(platform.load().to_string())
 }
 
@@ -105,5 +162,10 @@ mod tests {
     #[test]
     fn test_part1() {
         assert_eq!(&super::part1(INPUT.to_string()).unwrap(), "136");
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(&super::part2(INPUT.to_string()).unwrap(), "64");
     }
 }
