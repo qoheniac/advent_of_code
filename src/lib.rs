@@ -122,6 +122,7 @@ pub fn solve(year: usize, day: usize, part: usize, input: String) -> PuzzleResul
         (2023, 14, 1) => aoc2023::day14::part1(input),
         (2023, 14, 2) => aoc2023::day14::part2(input),
         (2023, 15, 1) => aoc2023::day15::part1(input),
+        (2023, 15, 2) => aoc2023::day15::part2(input),
 
         (year, day, part) => Err(format!("no solution for day {day} part {part} of {year}"))?,
     }
