@@ -85,19 +85,19 @@ use Tile::*;
 struct Contraption(Array2<Tile>);
 
 impl Contraption {
-    fn field(&self, Location(i, j): Location) -> Option<&Tile> {
+    fn tile(&self, Location(i, j): Location) -> Option<&Tile> {
         self.0.get((i as usize, j as usize))
     }
 
     fn step(&self, location: Location, direction: Direction) -> Option<Location> {
         let location = direction.step(location);
-        self.field(location).and(Some(location))
+        self.tile(location).and(Some(location))
     }
 
     fn propagate(&self, BeamSegment(location, direction): BeamSegment) -> Vec<BeamSegment> {
         let mut directions = Vec::new();
-        if let Some(field) = self.field(location) {
-            match *field {
+        if let Some(tile) = self.tile(location) {
+            match *tile {
                 Mirror(mirror) => directions.push(mirror.reflect(direction)),
                 Space => directions.push(direction),
                 Splitter(splitter) => {
@@ -135,7 +135,7 @@ impl Contraption {
 impl std::str::FromStr for Contraption {
     type Err = Box<dyn std::error::Error>;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut fields = Vec::new();
+        let mut tiles = Vec::new();
         let mut width = 0;
         let mut height = 0;
         for line in s.lines() {
@@ -143,7 +143,7 @@ impl std::str::FromStr for Contraption {
             width = 0;
             for character in line.chars() {
                 width += 1;
-                fields.push(match character {
+                tiles.push(match character {
                     '/' => Mirror(PositiveSlope),
                     '\\' => Mirror(NegativeSlope),
                     '.' => Space,
@@ -153,10 +153,7 @@ impl std::str::FromStr for Contraption {
                 })
             }
         }
-        Ok(Contraption(Array2::from_shape_vec(
-            (height, width),
-            fields,
-        )?))
+        Ok(Contraption(Array2::from_shape_vec((height, width), tiles)?))
     }
 }
 
