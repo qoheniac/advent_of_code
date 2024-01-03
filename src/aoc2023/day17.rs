@@ -1,5 +1,12 @@
 //! # Day 17: Clumsy Crucible
 //!
+//! The input consists of a city map where each number represents the heat a
+//! crucible loses when it moves to that tile. The crucibles need to move a
+//! minimum distance forward before they can turn left or right and after a
+//! maximum distance they need to turn. The goal is to find the minimum heat
+//! loss for a crucible starting in the top-left corner to reach the
+//! bottom-right corner.
+//!
 //! [puzzle site](https://adventofcode.com/2023/day/17)
 
 use ndarray::{Array2, Dim};
@@ -41,17 +48,19 @@ impl Direction {
 }
 
 #[derive(Clone, Copy, Eq, Hash, PartialEq)]
-struct State(Location, Direction, u8);
+struct State<const MIN: usize, const MAX: usize>(Location, Direction, usize);
 
-impl State {
-    fn neighbors(&self) -> Vec<State> {
-        let &State(location, direction, count) = self;
+impl<const MIN: usize, const MAX: usize> State<MIN, MAX> {
+    fn neighbors(&self) -> Vec<Self> {
+        let &Self(location, direction, count) = self;
         let mut states = Vec::new();
-        if count < 2 {
-            states.push(State(direction.step(location), direction, count + 1));
+        if count + 1 < MAX {
+            states.push(Self(direction.step(location), direction, count + 1));
         }
-        for direction in [direction.turn_left(), direction.turn_right()] {
-            states.push(State(direction.step(location), direction, 0));
+        if count + 1 >= MIN {
+            for direction in [direction.turn_left(), direction.turn_right()] {
+                states.push(Self(direction.step(location), direction, 0));
+            }
         }
         states
     }
@@ -83,37 +92,39 @@ impl std::str::FromStr for HeatMap {
     }
 }
 
-struct Losses(Array2<[u32; 10]>);
+struct Losses<const MIN: usize, const MAX: usize>(Array2<Vec<u32>>);
 
-impl Losses {
+impl<const MIN: usize, const MAX: usize> Losses<MIN, MAX> {
     fn new(dim: Dim<[usize; 2]>) -> Self {
-        Losses(Array2::from_elem(dim, [u32::MAX; 10]))
+        Losses(Array2::from_elem(dim, vec![u32::MAX; 4 * MAX - 2]))
     }
 
-    fn index(direction: Direction, count: u8) -> usize {
-        if count < 2 {
+    fn index(direction: Direction, count: usize) -> usize {
+        if count + 1 < MAX {
             count as usize
-                + match direction {
-                    Down => 0,
-                    Left => 2,
-                    Right => 4,
-                    Up => 6,
-                }
+                + (MAX - 1)
+                    * match direction {
+                        Down => 0,
+                        Left => 1,
+                        Right => 2,
+                        Up => 3,
+                    }
         } else {
-            match direction {
-                Down | Up => 8,
-                Left | Right => 9,
-            }
+            4 * (MAX - 1)
+                + match direction {
+                    Down | Up => 0,
+                    Left | Right => 1,
+                }
         }
     }
 
-    fn get(&self, State(Location(i, j), direction, count): State) -> Option<u32> {
+    fn get(&self, State(Location(i, j), direction, count): State<MIN, MAX>) -> Option<u32> {
         self.0
             .get((i as usize, j as usize))
             .and_then(|array| Some(array[Self::index(direction, count)]))
     }
 
-    fn update(&mut self, State(Location(i, j), direction, count): State, loss: u32) {
+    fn update(&mut self, State(Location(i, j), direction, count): State<MIN, MAX>, loss: u32) {
         if let Some(array) = self.0.get_mut((i as usize, j as usize)) {
             let index = Self::index(direction, count);
             array[index] = array[index].min(loss);
@@ -121,10 +132,9 @@ impl Losses {
     }
 }
 
-/// Part 1
-pub fn part1(input: String) -> crate::PuzzleResult {
+fn solution<const MIN: usize, const MAX: usize>(input: String) -> crate::PuzzleResult {
     let map: HeatMap = input.parse()?;
-    let mut losses = Losses::new(map.0.raw_dim());
+    let mut losses = Losses::<MIN, MAX>::new(map.0.raw_dim());
     let mut to_visit = std::collections::HashSet::new();
     for first_step in [
         State(Location(0, 1), Right, 0),
@@ -158,6 +168,16 @@ pub fn part1(input: String) -> crate::PuzzleResult {
     Ok(optimal_loss.to_string())
 }
 
+/// Part 1: Forward steps mustn't be more than 3 before turn
+pub fn part1(input: String) -> crate::PuzzleResult {
+    solution::<0, 3>(input)
+}
+
+/// Part 2: Forward steps must be between 4 and 10 before turn
+pub fn part2(input: String) -> crate::PuzzleResult {
+    solution::<4, 10>(input)
+}
+
 #[cfg(test)]
 mod tests {
     const INPUT: &str = concat!(
@@ -179,5 +199,12 @@ mod tests {
     #[test]
     fn test_part1() {
         assert_eq!(&super::part1(INPUT.to_string()).unwrap(), "102");
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(&super::part2(INPUT.to_string()).unwrap(), "94");
+        let input = "111111111111\n999999999991\n999999999991\n999999999991\n999999999991";
+        assert_eq!(&super::part2(input.to_string()).unwrap(), "47");
     }
 }
