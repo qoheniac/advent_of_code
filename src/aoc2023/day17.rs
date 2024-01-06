@@ -14,6 +14,8 @@ use ndarray::{Array2, Dim};
 #[derive(Clone, Copy, Eq, Hash, PartialEq)]
 struct Location(i32, i32);
 
+const ORIGIN: Location = Location(0, 0);
+
 #[derive(Clone, Copy, Eq, Hash, PartialEq)]
 enum Direction {
     Down,
@@ -24,13 +26,22 @@ enum Direction {
 use Direction::*;
 
 impl Direction {
-    fn step(&self, Location(i, j): Location) -> Location {
+    fn step(&self, Location(i, j): Location, d: usize) -> Location {
+        let d = d as i32;
         match self {
-            &Down => Location(i + 1, j),
-            &Left => Location(i, j - 1),
-            &Right => Location(i, j + 1),
-            &Up => Location(i - 1, j),
+            &Down => Location(i + d, j),
+            &Left => Location(i, j - d),
+            &Right => Location(i, j + d),
+            &Up => Location(i - d, j),
         }
+    }
+
+    fn path(&self, location: Location, distance: usize) -> Vec<Location> {
+        let mut path = Vec::new();
+        for d in 1..=distance {
+            path.push(self.step(location, d));
+        }
+        path
     }
 
     fn turn_left(&self) -> Direction {
@@ -51,16 +62,18 @@ impl Direction {
 struct State<const MIN: usize, const MAX: usize>(Location, Direction, usize);
 
 impl<const MIN: usize, const MAX: usize> State<MIN, MAX> {
-    fn neighbors(&self) -> Vec<Self> {
+    fn neighbors(&self) -> Vec<(Vec<Location>, Self)> {
         let &Self(location, direction, count) = self;
         let mut states = Vec::new();
-        if count + 1 < MAX {
-            states.push(Self(direction.step(location), direction, count + 1));
+        if count + MIN < MAX {
+            let path = direction.path(location, 1);
+            let location = *path.last().unwrap();
+            states.push((path, Self(location, direction, count + 1)));
         }
-        if count + 1 >= MIN {
-            for direction in [direction.turn_left(), direction.turn_right()] {
-                states.push(Self(direction.step(location), direction, 0));
-            }
+        for direction in [direction.turn_left(), direction.turn_right()] {
+            let path = direction.path(location, MIN);
+            let location = *path.last().unwrap();
+            states.push((path, Self(location, direction, 0)));
         }
         states
     }
@@ -71,6 +84,10 @@ struct HeatMap(Array2<u32>);
 impl HeatMap {
     fn heat(&self, Location(i, j): Location) -> Option<u32> {
         self.0.get((i as usize, j as usize)).copied()
+    }
+
+    fn collect_heat(&self, path: Vec<Location>) -> Option<u32> {
+        path.iter().map(|&location| self.heat(location)).sum()
     }
 }
 
@@ -96,13 +113,13 @@ struct Losses<const MIN: usize, const MAX: usize>(Array2<Vec<u32>>);
 
 impl<const MIN: usize, const MAX: usize> Losses<MIN, MAX> {
     fn new(dim: Dim<[usize; 2]>) -> Self {
-        Losses(Array2::from_elem(dim, vec![u32::MAX; 4 * MAX - 2]))
+        Losses(Array2::from_elem(dim, vec![u32::MAX; 4 * (MAX - MIN) + 2]))
     }
 
     fn index(direction: Direction, count: usize) -> usize {
-        if count + 1 < MAX {
+        if count + MIN < MAX {
             count as usize
-                + (MAX - 1)
+                + (MAX - MIN)
                     * match direction {
                         Down => 0,
                         Left => 1,
@@ -110,7 +127,7 @@ impl<const MIN: usize, const MAX: usize> Losses<MIN, MAX> {
                         Up => 3,
                     }
         } else {
-            4 * (MAX - 1)
+            4 * (MAX - MIN)
                 + match direction {
                     Down | Up => 0,
                     Left | Right => 1,
@@ -136,12 +153,9 @@ fn solution<const MIN: usize, const MAX: usize>(input: String) -> crate::PuzzleR
     let map: HeatMap = input.parse()?;
     let mut losses = Losses::<MIN, MAX>::new(map.0.raw_dim());
     let mut to_visit = std::collections::HashSet::new();
-    for first_step in [
-        State(Location(0, 1), Right, 0),
-        State(Location(1, 0), Down, 0),
-    ] {
-        losses.update(first_step, map.heat(first_step.0).unwrap());
-        to_visit.insert(first_step);
+    for initial_state in [State(ORIGIN, Left, MAX), State(ORIGIN, Up, MAX)] {
+        losses.update(initial_state, 0);
+        to_visit.insert(initial_state);
     }
     let destination = Location(map.0.nrows() as i32 - 1, map.0.ncols() as i32 - 1);
     let optimal_loss = 'dijkstra: loop {
@@ -152,8 +166,8 @@ fn solution<const MIN: usize, const MAX: usize>(input: String) -> crate::PuzzleR
             .unwrap();
         to_visit.remove(&best);
         let best_loss = losses.get(best).unwrap();
-        for neighbor in best.neighbors() {
-            if let Some(extra_loss) = map.heat(neighbor.0) {
+        for (path, neighbor) in best.neighbors() {
+            if let Some(extra_loss) = map.collect_heat(path) {
                 let neighbor_loss = best_loss + extra_loss;
                 if neighbor.0 == destination {
                     break 'dijkstra neighbor_loss;
@@ -170,7 +184,7 @@ fn solution<const MIN: usize, const MAX: usize>(input: String) -> crate::PuzzleR
 
 /// Part 1: Forward steps mustn't be more than 3 before turn
 pub fn part1(input: String) -> crate::PuzzleResult {
-    solution::<0, 3>(input)
+    solution::<1, 3>(input)
 }
 
 /// Part 2: Forward steps must be between 4 and 10 before turn
@@ -205,6 +219,6 @@ mod tests {
     fn test_part2() {
         assert_eq!(&super::part2(INPUT.to_string()).unwrap(), "94");
         let input = "111111111111\n999999999991\n999999999991\n999999999991\n999999999991";
-        assert_eq!(&super::part2(input.to_string()).unwrap(), "47");
+        assert_eq!(&super::part2(input.to_string()).unwrap(), "71");
     }
 }
