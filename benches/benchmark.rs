@@ -58,6 +58,8 @@ benches!(
     benchmark_2022_10_2,
     benchmark_2022_11_1,
     benchmark_2022_11_2,
+    benchmark_2022_12_1,
+    benchmark_2022_12_2,
     // 2023
     benchmark_2023_01_1,
     benchmark_2023_01_2,
