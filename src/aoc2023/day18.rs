@@ -1,6 +1,13 @@
 //! # Day 18: Lavaduct Lagoon
 //!
+//! The input contains a dig plan where each line describes the direction and
+//! length of a trench segment. The trench forms a loop and the goal is to
+//! calculate the volume of the lagoon that forms after digging out the interior
+//! of the trench.
+//!
 //! [puzzle site](https://adventofcode.com/2023/day/18)
+
+use regex::Regex;
 
 enum Direction {
     Down,
@@ -10,49 +17,67 @@ enum Direction {
 }
 use Direction::*;
 
-impl Direction {
-    fn go(&self, start: &(i32, i32), distance: i32) -> (i32, i32) {
-        match self {
-            Down => (start.0, start.1 - distance),
-            Left => (start.0 - distance, start.1),
-            Right => (start.0 + distance, start.1),
-            Up => (start.0, start.1 + distance),
-        }
-    }
-}
-
-impl std::str::FromStr for Direction {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "D" => Ok(Down),
-            "L" => Ok(Left),
-            "R" => Ok(Right),
-            "U" => Ok(Up),
-            _ => Err(format!("{s} is not a direction")),
-        }
-    }
-}
-
-/// Part 1
-pub fn part1(input: String) -> crate::PuzzleResult {
+// Shoelace formula plus outer half of the trench
+fn lagoon_volume(dig_plan: impl Iterator<Item = (Direction, i64)>) -> i64 {
     let mut lagoon_volume = 0;
     let mut trench_length = 0;
     let mut location = (0, 0);
-    for line in input.lines() {
-        let mut split = line.split(' ');
-        let error = format!("cannot parse line {line}");
-        let direction: Direction = split.next().ok_or(error.clone())?.parse()?;
-        let distance: i32 = split.next().ok_or(error)?.parse()?;
+    for (direction, distance) in dig_plan {
         let (x_1, y_1) = location;
-        location = direction.go(&location, distance);
+        location = match direction {
+            Down => (x_1, y_1 - distance),
+            Left => (x_1 - distance, y_1),
+            Right => (x_1 + distance, y_1),
+            Up => (x_1, y_1 + distance),
+        };
         let (x_2, y_2) = location;
         lagoon_volume += x_1 * y_2 - x_2 * y_1;
         trench_length += distance;
     }
-    lagoon_volume = (lagoon_volume.abs() + trench_length) / 2 + 1;
-    Ok(lagoon_volume.to_string())
+    (lagoon_volume.abs() + trench_length) / 2 + 1
+}
+
+/// Part 1: Direction in first column, distance in second
+pub fn part1(input: String) -> crate::PuzzleResult {
+    let dig_plan = input.lines().flat_map(|line| {
+        let mut split = line.split(' ');
+        let direction: Option<Direction> = split.next().and_then(|s| match s {
+            "D" => Some(Down),
+            "L" => Some(Left),
+            "R" => Some(Right),
+            "U" => Some(Up),
+            _ => None,
+        });
+        let distance: Option<i64> = split.next().and_then(|s| s.parse().ok());
+        direction.zip(distance)
+    });
+    Ok(lagoon_volume(dig_plan).to_string())
+}
+
+/// Part 2: Third column holds direction and distance
+///
+/// The third column is in parentheses and holds a hex triplet with a leading
+/// number sign. The last digit represents the direction and the other digits
+/// represent the distance.
+pub fn part2(input: String) -> crate::PuzzleResult {
+    let re = Regex::new(r"\(#([0-9a-f]{6})\)").unwrap();
+    let dig_plan = input.lines().flat_map(|line| {
+        re.captures(line).and_then(|cap| {
+            cap.get(1).and_then(|m| {
+                let mut chars = m.as_str().chars();
+                let direction = match chars.next_back() {
+                    Some('0') => Some(Right),
+                    Some('1') => Some(Down),
+                    Some('2') => Some(Left),
+                    Some('3') => Some(Up),
+                    _ => None,
+                };
+                let distance = i64::from_str_radix(chars.as_str(), 16).ok();
+                direction.zip(distance)
+            })
+        })
+    });
+    Ok(lagoon_volume(dig_plan).to_string())
 }
 
 #[cfg(test)]
@@ -77,5 +102,10 @@ mod tests {
     #[test]
     fn test_part1() {
         assert_eq!(&super::part1(INPUT.to_string()).unwrap(), "62");
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(&super::part2(INPUT.to_string()).unwrap(), "952408144115");
     }
 }
