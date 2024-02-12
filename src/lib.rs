@@ -23,6 +23,7 @@ pub mod aoc2022 {
     pub mod day10;
     pub mod day11;
     pub mod day12;
+    pub mod day13;
 }
 
 /// # Solutions for 2023
@@ -98,6 +99,8 @@ pub fn solve(year: usize, day: usize, part: usize, input: String) -> PuzzleResul
         (2022, 11, 2) => aoc2022::day11::part2(input),
         (2022, 12, 1) => aoc2022::day12::part1(input),
         (2022, 12, 2) => aoc2022::day12::part2(input),
+        (2022, 13, 1) => aoc2022::day13::part1(input),
+        (2022, 13, 2) => aoc2022::day13::part2(input),
 
         (2023, 1, 1) => aoc2023::day01::part1(input),
         (2023, 1, 2) => aoc2023::day01::part2(input),
