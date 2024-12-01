@@ -101,4 +101,5 @@ benches!(
     benchmark_2023_18_2,
     // 2024
     benchmark_2024_01_1,
+    benchmark_2024_01_2,
 );
