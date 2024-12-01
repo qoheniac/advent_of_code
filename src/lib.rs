@@ -50,6 +50,13 @@ pub mod aoc2023 {
     pub mod day18;
 }
 
+/// # Solutions for 2024
+///
+/// [puzzle site](https://adventofcode.com/2024)
+pub mod aoc2024 {
+    pub mod day01;
+}
+
 /// Common return type of puzzle solutions
 pub type PuzzleResult = Result<String, Box<dyn std::error::Error>>;
 
@@ -138,6 +145,8 @@ pub fn solve(year: usize, day: usize, part: usize, input: String) -> PuzzleResul
         (2023, 17, 2) => aoc2023::day17::part2(input),
         (2023, 18, 1) => aoc2023::day18::part1(input),
         (2023, 18, 2) => aoc2023::day18::part2(input),
+
+        (2024, 1, 1) => aoc2024::day01::part1(input),
 
         (year, day, part) => Err(format!("no solution for day {day} part {part} of {year}"))?,
     }
