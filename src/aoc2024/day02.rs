@@ -28,29 +28,56 @@ fn check_levels(level: u8, previous_level: u8) -> Report {
     }
 }
 
-/// Part 1: Number of safe reports
-pub fn part1(input: String) -> crate::PuzzleResult {
-    let mut number_of_safe_reports = 0;
-    for line in input.lines() {
-        let mut levels = line.split_whitespace().map(|s| s.parse());
-        let mut previous_level = (levels.next()).ok_or(format!("no level in '{line}'"))??;
-        let mut level = (levels.next()).ok_or(format!("only one level in '{line}"))??;
-        let mut report = check_levels(level, previous_level);
-        for next in levels {
+impl From<Vec<u8>> for Report {
+    fn from(levels: Vec<u8>) -> Self {
+        let mut report = check_levels(levels[1], levels[0]);
+        let mut previous_level = levels[1];
+        for &level in &levels[2..] {
             if report == Report::Unsafe {
                 break;
             }
-            (level, previous_level) = (next?, level);
-            let interim_report = check_levels(level, previous_level);
-            if interim_report != report {
+            if check_levels(level, previous_level) != report {
                 report = Report::Unsafe
             }
+            previous_level = level;
         }
-        if let Report::Safe(_) = report {
+        report
+    }
+}
+
+fn parse(line: &str) -> Result<Vec<u8>, std::num::ParseIntError> {
+    line.split_whitespace().map(|s| s.parse()).collect()
+}
+
+fn solution(input: String, use_dampener: bool) -> crate::PuzzleResult {
+    let mut number_of_safe_reports = 0;
+    for line in input.lines() {
+        let levels = parse(line)?;
+        if Report::from(levels.clone()) != Report::Unsafe {
             number_of_safe_reports += 1;
+        } else if use_dampener {
+            for i in 0..levels.len() {
+                let mut residual = levels.clone();
+                residual.remove(i);
+                if Report::from(residual) != Report::Unsafe {
+                    number_of_safe_reports += 1;
+                    break;
+                }
+            }
         }
     }
     Ok(number_of_safe_reports.to_string())
+}
+
+/// Part 1: Number of safe reports
+pub fn part1(input: String) -> crate::PuzzleResult {
+    solution(input, false)
+}
+
+/// Part 2: Number of safe reports when up to one unsafe level can be ignored
+/// per report
+pub fn part2(input: String) -> crate::PuzzleResult {
+    solution(input, true)
 }
 
 #[cfg(test)]
@@ -67,5 +94,10 @@ mod tests {
     #[test]
     fn test_part1() {
         assert_eq!(&super::part1(INPUT.to_string()).unwrap(), "2");
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(&super::part2(INPUT.to_string()).unwrap(), "4");
     }
 }
