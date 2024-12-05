@@ -44,6 +44,38 @@ pub fn part1(input: String) -> crate::PuzzleResult {
     Ok(sum.to_string())
 }
 
+/// Part 1: Sum middle numbers over all fixed incorrectly ordered sequences
+pub fn part2(input: String) -> crate::PuzzleResult {
+    let (rules, sequences) = input.split_once("\n\n").ok_or("no blank line found")?;
+    let rules = parse_rules(rules)?;
+    let mut sum = 0;
+    for sequence in sequences.lines() {
+        let mut numbers_before = Vec::new();
+        let mut was_ordered = true;
+        for number in sequence.split(",") {
+            let number: u16 = number.parse()?;
+            let mut insert_happened = false;
+            if let Some(numbers_after) = rules.get(&number) {
+                for i in 0..numbers_before.len() {
+                    if numbers_after.contains(&numbers_before[i]) {
+                        was_ordered = false;
+                        numbers_before.insert(i, number);
+                        insert_happened = true;
+                        break;
+                    }
+                }
+            }
+            if !insert_happened {
+                numbers_before.push(number);
+            }
+        }
+        if !was_ordered {
+            sum += numbers_before[(numbers_before.len() - 1) / 2];
+        }
+    }
+    Ok(sum.to_string())
+}
+
 #[cfg(test)]
 mod tests {
     const INPUT: &str = concat!(
@@ -80,5 +112,10 @@ mod tests {
     #[test]
     fn test_part1() {
         assert_eq!(&super::part1(INPUT.to_string()).unwrap(), "143");
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(&super::part2(INPUT.to_string()).unwrap(), "123");
     }
 }
