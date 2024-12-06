@@ -8,6 +8,7 @@
 
 use std::{collections::HashSet, str::FromStr};
 
+#[derive(Clone, Copy, Eq, Hash, PartialEq)]
 enum Direction {
     Right,
     Up,
@@ -16,6 +17,7 @@ enum Direction {
 }
 use Direction::*;
 
+#[derive(Clone, Copy, Eq, Hash, PartialEq)]
 struct Guard {
     position: (usize, usize),
     direction: Direction,
@@ -32,6 +34,7 @@ impl Guard {
     }
 }
 
+#[derive(Debug)]
 enum Tile {
     Space,
     Obstruction,
@@ -111,6 +114,33 @@ pub fn part1(input: String) -> crate::PuzzleResult {
     Ok(seen_positions.len().to_string())
 }
 
+/// Part 2: Count ways to make guard loop by adding one obstruction
+pub fn part2(input: String) -> crate::PuzzleResult {
+    let mut map: Map = input.parse()?;
+    let start = map.guard.position;
+    let mut count = 0;
+    for i in 0..map.height {
+        for j in 0..map.width {
+            match map.tiles[i][j] {
+                Tile::Space if (i, j) != start => map.tiles[i][j] = Tile::Obstruction,
+                _ => continue,
+            }
+            let mut visited_states = HashSet::new();
+            visited_states.insert(map.guard);
+            while map.move_guard().is_ok() {
+                if !visited_states.insert(map.guard) {
+                    count += 1;
+                    break;
+                }
+            }
+            map.tiles[i][j] = Tile::Space;
+            map.guard.position = start;
+            map.guard.direction = Up;
+        }
+    }
+    Ok(count.to_string())
+}
+
 #[cfg(test)]
 mod tests {
     const INPUT: &str = concat!(
@@ -129,5 +159,10 @@ mod tests {
     #[test]
     fn test_part1() {
         assert_eq!(&super::part1(INPUT.to_string()).unwrap(), "41");
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(&super::part2(INPUT.to_string()).unwrap(), "6");
     }
 }
