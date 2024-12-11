@@ -119,4 +119,5 @@ benches!(
     benchmark_2024_09_1,
     benchmark_2024_09_2,
     benchmark_2024_10_1,
+    benchmark_2024_10_2,
 );

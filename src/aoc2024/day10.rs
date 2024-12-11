@@ -53,8 +53,7 @@ impl Map {
     }
 }
 
-/// Part 1: Sum up how many 9s can be reached from each 0 over all 0s
-pub fn part1(input: String) -> crate::PuzzleResult {
+fn solution(input: String, count_distinct: bool) -> crate::PuzzleResult {
     let map: Map = input.parse()?;
     let mut trailheads = Vec::new();
     for i in 0..map.height {
@@ -71,7 +70,7 @@ pub fn part1(input: String) -> crate::PuzzleResult {
             for _ in 0..locations.len() {
                 for neighbor in map.neighbors(locations.pop_front().unwrap()) {
                     if map.get(neighbor) == target {
-                        if !locations.contains(&neighbor) {
+                        if count_distinct || !locations.contains(&neighbor) {
                             locations.push_back(neighbor);
                         }
                     }
@@ -81,6 +80,16 @@ pub fn part1(input: String) -> crate::PuzzleResult {
         sum += locations.len();
     }
     Ok(sum.to_string())
+}
+
+/// Part 1: Sum up how many 9s can be reached from each 0 over all 0s
+pub fn part1(input: String) -> crate::PuzzleResult {
+    solution(input, false)
+}
+
+/// Part 2: Count all distinct trails
+pub fn part2(input: String) -> crate::PuzzleResult {
+    solution(input, true)
 }
 
 #[cfg(test)]
@@ -99,5 +108,10 @@ mod tests {
     #[test]
     fn test_part1() {
         assert_eq!(&super::part1(INPUT.to_string()).unwrap(), "36");
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(&super::part2(INPUT.to_string()).unwrap(), "81");
     }
 }
