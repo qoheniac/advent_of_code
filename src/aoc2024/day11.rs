@@ -6,11 +6,11 @@
 //!
 //! [puzzle site](https://adventofcode.com/2024/day11)
 
-/// 25 Iterations
-pub fn part1(input: String) -> crate::PuzzleResult {
+fn solution(input: String, iterations: u8) -> crate::PuzzleResult {
     let mut numbers: Vec<u64> =
         (input.split_whitespace().map(|n| n.parse())).collect::<Result<_, _>>()?;
-    for _ in 0..25 {
+    let mut counts = vec![1u64; numbers.len()];
+    for _ in 0..iterations {
         let mut i = 0;
         while i < numbers.len() {
             let number = numbers[i];
@@ -20,14 +20,38 @@ pub fn part1(input: String) -> crate::PuzzleResult {
                 let n = (number.ilog(10) + 1) / 2;
                 numbers[i] = number / 10u64.pow(n);
                 numbers.insert(i + 1, number - numbers[i] * 10u64.pow(n));
+                counts.insert(i + 1, counts[i]);
                 i += 1;
             } else {
                 numbers[i] *= 2024;
             }
             i += 1;
         }
+        i = 0;
+        while i < numbers.len() {
+            let mut j = i + 1;
+            while j < numbers.len() {
+                if numbers[j] == numbers[i] {
+                    numbers.remove(j);
+                    counts[i] += counts.remove(j);
+                } else {
+                    j += 1;
+                }
+            }
+            i += 1;
+        }
     }
-    Ok(numbers.len().to_string())
+    Ok(counts.into_iter().sum::<u64>().to_string())
+}
+
+/// Part 1: 25 Iterations
+pub fn part1(input: String) -> crate::PuzzleResult {
+    solution(input, 25)
+}
+
+/// Part 2: 75 Iterations
+pub fn part2(input: String) -> crate::PuzzleResult {
+    solution(input, 75)
 }
 
 #[cfg(test)]
