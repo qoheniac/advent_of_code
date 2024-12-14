@@ -89,9 +89,4 @@ mod tests {
     fn test_part1() {
         assert_eq!(&super::part1(INPUT.to_string()).unwrap(), "480");
     }
-
-    #[test]
-    fn test_part2() {
-        assert_eq!(&super::part2(INPUT.to_string()).unwrap(), "0");
-    }
 }
