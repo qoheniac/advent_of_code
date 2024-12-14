@@ -3,12 +3,13 @@
 //! The input consists of an rectangular matrix of characters representing
 //! garden plots with a certain plant. Neighboring garden plots with the same
 //! plant are grouped together and get a fence which costs a price that equals
-//! the product of the group's area and perimeter.
+//! the product of the group's area and perimeter. With bulk discount the number
+//! of sides instead of the perimeter is used to calculate the price. The goal
+//! is to calculate the total price to buy fences for all regions.
 //!
 //! [puzzle site](https://adventofcode.com/2024/day12)
 
-/// Part 1: Total price for all fences
-pub fn part1(input: String) -> crate::PuzzleResult {
+fn regions(input: String) -> Vec<Vec<[usize; 2]>> {
     let mut plants: Vec<Vec<(char, usize)>> = Vec::new();
     let mut regions: Vec<Vec<[usize; 2]>> = Vec::new();
     for (i, line) in input.lines().enumerate() {
@@ -54,18 +55,74 @@ pub fn part1(input: String) -> crate::PuzzleResult {
             }
         }
     }
-    let mut price = 0;
-    for region in regions {
-        let mut perimeter = 0;
-        for &[i, j] in &region {
-            perimeter += !region.contains(&[i, j + 1]) as usize
-                + (i == 0 || !region.contains(&[i - 1, j])) as usize
-                + (j == 0 || !region.contains(&[i, j - 1])) as usize
-                + !region.contains(&[i + 1, j]) as usize;
-        }
-        price += perimeter * region.len();
+    regions
+}
+
+fn price_without_discount(region: Vec<[usize; 2]>) -> usize {
+    let mut perimeter = 0;
+    for &[i, j] in &region {
+        perimeter += !region.contains(&[i, j + 1]) as usize
+            + (i == 0 || !region.contains(&[i - 1, j])) as usize
+            + (j == 0 || !region.contains(&[i, j - 1])) as usize
+            + !region.contains(&[i + 1, j]) as usize;
     }
-    Ok(price.to_string())
+    perimeter * region.len()
+}
+
+fn price_with_discount(region: Vec<[usize; 2]>) -> usize {
+    let mut east = Vec::new();
+    let mut north = Vec::new();
+    let mut west = Vec::new();
+    let mut south = Vec::new();
+    let mut sides = 0;
+    for &[i, j] in &region {
+        if !region.contains(&[i, j + 1]) {
+            east.push([i, j]);
+            if (i == 0 || !east.contains(&[i - 1, j])) && !east.contains(&[i + 1, j]) {
+                sides += 1;
+            }
+        }
+        if i == 0 || !region.contains(&[i - 1, j]) {
+            north.push([i, j]);
+            if !north.contains(&[i, j + 1]) && (j == 0 || !north.contains(&[i, j - 1])) {
+                sides += 1;
+            }
+        }
+        if j == 0 || !region.contains(&[i, j - 1]) {
+            west.push([i, j]);
+            if (i == 0 || !west.contains(&[i - 1, j])) && !west.contains(&[i + 1, j]) {
+                sides += 1;
+            }
+        }
+        if !region.contains(&[i + 1, j]) {
+            south.push([i, j]);
+            if !south.contains(&[i, j + 1]) && (j == 0 || !south.contains(&[i, j - 1])) {
+                sides += 1;
+            }
+        }
+    }
+    sides * region.len()
+}
+
+fn price(regions: Vec<Vec<[usize; 2]>>, with_discount: bool) -> usize {
+    regions
+        .into_iter()
+        .map(if with_discount {
+            price_with_discount
+        } else {
+            price_without_discount
+        })
+        .sum()
+}
+
+/// Part 1: Without bulk discount
+pub fn part1(input: String) -> crate::PuzzleResult {
+    Ok(price(regions(input), false).to_string())
+}
+
+/// Part 2: With bulk discount
+pub fn part2(input: String) -> crate::PuzzleResult {
+    Ok(price(regions(input), true).to_string())
 }
 
 #[cfg(test)]
@@ -84,11 +141,22 @@ mod tests {
         "MIIISIJEEE\n",
         "MMMISSJEEE",
     );
+    const FORTH: &str = "EEEEE\nEXXXX\nEEEEE\nEXXXX\nEEEEE";
+    const FIFTH: &str = "AAAAAA\nAAABBA\nAAABBA\nABBAAA\nABBAAA\nAAAAAA";
 
     #[test]
     fn test_part1() {
         assert_eq!(&super::part1(FIRST.to_string()).unwrap(), "140");
         assert_eq!(&super::part1(SECOND.to_string()).unwrap(), "772");
         assert_eq!(&super::part1(THIRD.to_string()).unwrap(), "1930");
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(&super::part2(FIRST.to_string()).unwrap(), "80");
+        assert_eq!(&super::part2(SECOND.to_string()).unwrap(), "436");
+        assert_eq!(&super::part2(THIRD.to_string()).unwrap(), "1206");
+        assert_eq!(&super::part2(FORTH.to_string()).unwrap(), "236");
+        assert_eq!(&super::part2(FIFTH.to_string()).unwrap(), "368");
     }
 }

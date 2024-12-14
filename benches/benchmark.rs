@@ -123,6 +123,7 @@ benches!(
     benchmark_2024_11_1,
     benchmark_2024_11_2,
     benchmark_2024_12_1,
+    benchmark_2024_12_2,
     benchmark_2024_13_1,
     benchmark_2024_13_2,
     benchmark_2024_14_1,

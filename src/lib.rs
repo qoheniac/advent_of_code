@@ -182,6 +182,7 @@ pub fn solve(year: usize, day: usize, part: usize, input: String) -> PuzzleResul
         (2024, 11, 1) => aoc2024::day11::part1(input),
         (2024, 11, 2) => aoc2024::day11::part2(input),
         (2024, 12, 1) => aoc2024::day12::part1(input),
+        (2024, 12, 2) => aoc2024::day12::part2(input),
         (2024, 13, 1) => aoc2024::day13::part1(input),
         (2024, 13, 2) => aoc2024::day13::part2(input),
         (2024, 14, 1) => aoc2024::day14::part1(input),
