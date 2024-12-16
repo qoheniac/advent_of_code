@@ -6,7 +6,9 @@
 //! (@) moving according to the instructions while shifting boxes as necessary.
 //! Walls cannot be shifted and instructions are ignored if a wall prevents the
 //! motion. The instructions can be right (>), up (^), left (<), and down(v).
-//! Newlines in the list of instruction may be ignored. The results is the
+//! Newlines in the list of instruction may be ignored. The result is 100 times
+//! a box's distance from the top outer wall plus its distance from the left
+//! outer wall summed over all boxes after applying the instructions.
 //!
 //! [puzzle site](https://adventofcode.com/2024/day15)
 #[derive(Clone, Copy)]
@@ -41,6 +43,8 @@ struct Warehouse {
     robot: [usize; 2],
     walls: HashSet<[usize; 2]>,
     boxes: HashSet<[usize; 2]>,
+    box_width: usize,
+    outer_wall_thickness: [usize; 2],
 }
 
 impl Warehouse {
@@ -58,24 +62,68 @@ impl Warehouse {
         })
     }
 
-    fn instruct(&mut self, instruction: Instruction) {
-        let mut locations = vec![self.robot];
-        while let Some(location) =
-            self.apply_instruction_to_location(instruction, *locations.last().unwrap())
-        {
-            if self.walls.contains(&location) {
-                break;
-            }
-            locations.push(location);
-            if !self.boxes.contains(&location) {
-                if locations.len() > 2 {
-                    self.boxes.remove(&locations[1]);
-                    self.boxes.insert(location);
-                }
-                self.robot = locations[1];
-                break;
+    fn contains_box(&self, [i, j]: [usize; 2]) -> Option<[usize; 2]> {
+        for dj in 0..self.box_width {
+            if j.checked_sub(dj)
+                .is_some_and(|j| self.boxes.contains(&[i, j]))
+            {
+                return Some([i, j - dj]);
             }
         }
+        None
+    }
+
+    fn move_boxes(&mut self, boxes: HashSet<[usize; 2]>, instruction: Instruction) -> bool {
+        if boxes.is_empty() {
+            return true;
+        }
+        let mut other_boxes = HashSet::new();
+        for &[i, j] in &boxes {
+            for dj in 0..self.box_width {
+                let location = self.apply_instruction_to_location(instruction, [i, j + dj]);
+                if location.is_none() || self.walls.contains(&location.unwrap()) {
+                    return false;
+                }
+                if let Some(other_box) = self.contains_box(location.unwrap()) {
+                    if other_box != [i, j] {
+                        other_boxes.insert(other_box);
+                    }
+                }
+            }
+        }
+        if self.move_boxes(other_boxes, instruction) {
+            for location in boxes {
+                if !self.boxes.remove(&location) {
+                    panic!("{location:?} is not a box")
+                }
+                self.boxes.insert(
+                    self.apply_instruction_to_location(instruction, location)
+                        .unwrap(),
+                );
+            }
+            return true;
+        }
+        false
+    }
+
+    fn instruct(&mut self, instruction: Instruction) {
+        if let Some(location) = self.apply_instruction_to_location(instruction, self.robot) {
+            if !self.walls.contains(&location) {
+                if !self.contains_box(location).is_some_and(|box_location| {
+                    !self.move_boxes(HashSet::from([box_location]), instruction)
+                }) {
+                    self.robot = location;
+                }
+            }
+        }
+    }
+
+    fn result(&self) -> usize {
+        let [di, dj] = self.outer_wall_thickness;
+        self.boxes
+            .iter()
+            .map(|&[i, j]| 100 * (i + di) + j + dj)
+            .sum()
     }
 }
 
@@ -122,6 +170,8 @@ impl std::str::FromStr for Warehouse {
             robot: robot.ok_or("no robot found")?,
             walls,
             boxes,
+            box_width: 1,
+            outer_wall_thickness: [1, 1],
         })
     }
 }
@@ -133,10 +183,25 @@ pub fn part1(input: String) -> crate::PuzzleResult {
     for instruction in instructions.lines().flat_map(|l| l.chars()) {
         warehouse.instruct(instruction.try_into()?);
     }
-    Ok((warehouse.boxes.iter())
-        .map(|&[i, j]| 100 * (i + 1) + j + 1)
-        .sum::<usize>()
-        .to_string())
+    Ok(warehouse.result().to_string())
+}
+
+/// Part 2
+pub fn part2(input: String) -> crate::PuzzleResult {
+    let (warehouse, instructions) = input.split_once("\n\n").ok_or("no blank line found")?;
+    let mut warehouse: Warehouse = warehouse.parse()?;
+    warehouse.width *= 2;
+    warehouse.robot[1] *= 2;
+    warehouse.walls = (warehouse.walls.iter())
+        .flat_map(|&[i, j]| [[i, 2 * j], [i, 2 * j + 1]])
+        .collect();
+    warehouse.boxes = (warehouse.boxes.iter()).map(|&[i, j]| [i, 2 * j]).collect();
+    warehouse.box_width = 2;
+    warehouse.outer_wall_thickness[1] = 2;
+    for instruction in instructions.lines().flat_map(|l| l.chars()) {
+        warehouse.instruct(instruction.try_into()?);
+    }
+    Ok(warehouse.result().to_string())
 }
 
 #[cfg(test)]
@@ -182,5 +247,10 @@ mod tests {
     fn test_part1() {
         assert_eq!(&super::part1(SMALL.to_string()).unwrap(), "2028");
         assert_eq!(&super::part1(BIG.to_string()).unwrap(), "10092");
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(&super::part2(BIG.to_string()).unwrap(), "9021");
     }
 }
