@@ -154,15 +154,21 @@ impl Scores {
     }
 }
 
-/// Part 1: Lowest possible score
-pub fn part1(input: String) -> crate::PuzzleResult {
+enum Task {
+    LowestScore,
+    CountTiles,
+}
+
+fn solution(input: String, task: Task) -> crate::PuzzleResult {
     let maze: Maze = input.parse()?;
     let mut scores = Scores(vec![vec![[usize::MAX; 4]; maze.width]; maze.height]);
     let mut to_visit = std::collections::HashSet::new();
+    let mut predecessors = std::collections::HashMap::<MazeState, Vec<MazeState>>::new();
+    let mut lowest_score = None;
     let start = maze.initial_state();
     scores.set(start, 0);
     to_visit.insert(start);
-    let best_score = 'dijkstra: loop {
+    'dijkstra: loop {
         let state = to_visit
             .iter()
             .min_by_key(|&&state| scores.get(state))
@@ -174,22 +180,61 @@ pub fn part1(input: String) -> crate::PuzzleResult {
         for (neighbor, transition_score) in maze.neighbor_states(state) {
             let neighbor_score = score + transition_score;
 
-            // final destination reached
-            if neighbor.position == maze.end {
-                break 'dijkstra neighbor_score;
+            if let Some(lowest_score) = lowest_score {
+                if neighbor_score > lowest_score {
+                    break 'dijkstra;
+                }
+            } else if neighbor.position == maze.end {
+                if let Task::LowestScore = task {
+                    return Ok(neighbor_score.to_string());
+                }
+                lowest_score = Some(neighbor_score);
             }
 
-            // update distance
             let old_neighbor_score = scores.get(neighbor);
-            if neighbor_score < old_neighbor_score {
+            if neighbor_score <= old_neighbor_score {
                 if old_neighbor_score == usize::MAX {
                     to_visit.insert(neighbor);
+                }
+                if neighbor_score == old_neighbor_score {
+                    predecessors.get_mut(&neighbor).unwrap().push(state);
+                } else {
+                    predecessors.insert(neighbor, vec![state]);
                 }
                 scores.set(neighbor, neighbor_score);
             }
         }
-    };
-    Ok(best_score.to_string())
+    }
+
+    let mut lowest_score_path_tiles = std::collections::HashSet::new();
+    let mut to_visit = Vec::new();
+    for direction in [East, North, West, South] {
+        to_visit.push(MazeState {
+            position: maze.end,
+            direction,
+        });
+    }
+    while !to_visit.is_empty() {
+        let state = to_visit.pop().unwrap();
+        lowest_score_path_tiles.insert(state.position);
+        if let Some(predecessors) = predecessors.get(&state) {
+            for &predecessor in predecessors {
+                to_visit.push(predecessor);
+            }
+        }
+    }
+
+    Ok(lowest_score_path_tiles.len().to_string())
+}
+
+/// Part 1: Lowest possible score
+pub fn part1(input: String) -> crate::PuzzleResult {
+    solution(input, Task::LowestScore)
+}
+
+/// Part 2: Number of tiles part of a lowest score path
+pub fn part2(input: String) -> crate::PuzzleResult {
+    solution(input, Task::CountTiles)
 }
 
 #[cfg(test)]
@@ -236,5 +281,11 @@ mod tests {
     fn test_part1() {
         assert_eq!(&super::part1(FIRST.to_string()).unwrap(), "7036");
         assert_eq!(&super::part1(SECOND.to_string()).unwrap(), "11048");
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(&super::part2(FIRST.to_string()).unwrap(), "45");
+        assert_eq!(&super::part2(SECOND.to_string()).unwrap(), "64");
     }
 }
