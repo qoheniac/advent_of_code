@@ -1,9 +1,9 @@
 //! # Day 13: Claw Contraption
 //!
 //! The input consists of blocks representing claw machines separated by blank
-//! lines. Each machine has two lines "Button [AB]: X\+[0-9]+, Y\+[0-9]+"
+//! lines. Each machine has two lines `Button [AB]: X\+[0-9]+, Y\+[0-9]+`
 //! describing how the machine's two buttons move the claw and a third line
-//! describing the target location "Price: X=[0-9]+, Y=[0-9]+". If the target
+//! describing the target location `Price: X=[0-9]+, Y=[0-9]+`. If the target
 //! can be reached by pressing each button no more than 100 times, then the cost
 //! to do that is 3 tokens each time the A button is pressed and 1 token each
 //! time the B token is pressed. The goal is to calculate the number of tokens
