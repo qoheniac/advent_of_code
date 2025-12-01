@@ -43,7 +43,7 @@ pub fn part2(input: String) -> crate::PuzzleResult {
     for line in input.lines() {
         if let Some((winning, numbers)) = line
             .split_once(": ")
-            .and_then(|split| (split.1.split_once(" | ")))
+            .and_then(|split| split.1.split_once(" | "))
         {
             let copies = 1 + following_copies.pop_front().unwrap_or(0);
             total += copies;
