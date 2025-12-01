@@ -135,4 +135,5 @@ benches!(
     benchmark_2024_17_1,
     // 2025
     benchmark_2025_01_1,
+    benchmark_2025_01_2,
 );
