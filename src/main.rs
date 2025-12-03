@@ -45,7 +45,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         std::fs::read_to_string(&args.token)
             .or(Err(format!("couldn't read token from {}", args.token)))
             .and_then(|token| download_input(token, args.year, args.day))
-            .and_then(|input| {
+            .inspect(|input| {
                 // Try to write puzzle input
                 if std::path::Path::new(&path)
                     .parent()
@@ -60,11 +60,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         eprintln!("Warning: \"couldn't write input to {path}\"");
                     }
                 }
-                Ok(input)
             })
     }?;
 
     // Solve puzzle
-    solve(args.year, args.day, args.part, input)
-        .and_then(|solution| Ok(println!("Solution: {solution}")))
+    solve(args.year, args.day, args.part, input).map(|solution| println!("Solution: {solution}"))
 }

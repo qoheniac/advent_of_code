@@ -20,7 +20,7 @@ impl Packet {
                 let mut list = Vec::new();
                 let mut depth = 0;
                 let mut left = 0;
-                for (index, character) in list_body.chars().enumerate() {
+                for (index, character) in list_body.char_indices() {
                     match character {
                         '[' => depth += 1,
                         ']' => depth -= 1,
@@ -42,30 +42,24 @@ impl Packet {
     }
 }
 
-impl PartialOrd for Packet {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+impl Ord for Packet {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         match (self, other) {
-            (Self::Integer(self_num), Self::Integer(other_num)) => self_num.partial_cmp(other_num),
+            (Self::Integer(self_num), Self::Integer(other_num)) => self_num.cmp(other_num),
             (Self::Integer(self_num), Self::List(_)) => {
-                Self::List(vec![Self::Integer(*self_num)]).partial_cmp(other)
+                Self::List(vec![Self::Integer(*self_num)]).cmp(other)
             }
             (Self::List(_), Self::Integer(other_num)) => {
-                self.partial_cmp(&Self::List(vec![Self::Integer(*other_num)]))
+                self.cmp(&Self::List(vec![Self::Integer(*other_num)]))
             }
-            (Self::List(self_list), Self::List(other_list)) => self_list.partial_cmp(other_list),
+            (Self::List(self_list), Self::List(other_list)) => self_list.cmp(other_list),
         }
     }
 }
 
-impl Ord for Packet {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        if *self < *other {
-            std::cmp::Ordering::Less
-        } else if *self == *other {
-            std::cmp::Ordering::Equal
-        } else {
-            std::cmp::Ordering::Greater
-        }
+impl PartialOrd for Packet {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
     }
 }
 
@@ -89,7 +83,7 @@ pub fn part2(input: String) -> crate::PuzzleResult {
     let mut packets: Vec<Packet> = input
         .lines()
         .filter(|line| !line.is_empty())
-        .map(|line| Packet::new(line))
+        .map(Packet::new)
         .collect();
     packets.sort();
     let divider1 = Packet::new("[[2]]");

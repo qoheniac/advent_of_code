@@ -47,7 +47,7 @@ pub fn part1(input: String) -> crate::PuzzleResult {
         // Check if previous candidates are part numbers
         'candidate: for (start, end, number) in previous_candidates {
             for position in &symbol_positions {
-                if (start.checked_sub(1).unwrap_or(0)..=end).contains(&position) {
+                if (start.saturating_sub(1)..=end).contains(position) {
                     sum += number;
                     continue 'candidate;
                 }
@@ -58,7 +58,7 @@ pub fn part1(input: String) -> crate::PuzzleResult {
         previous_candidates = Vec::new();
         'candidate: for (start, end, number) in candidates {
             for position in previous_symbol_positions.iter().chain(&symbol_positions) {
-                if (start.checked_sub(1).unwrap_or(0)..=end).contains(&position) {
+                if (start.saturating_sub(1)..=end).contains(position) {
                     sum += number;
                     continue 'candidate;
                 }
@@ -112,7 +112,7 @@ pub fn part2(input: String) -> crate::PuzzleResult {
         // Check new stars against previous and new numbers
         for (position, neighbors) in &mut stars {
             for (start, end, number) in numbers.iter().chain(&previous_numbers) {
-                if (start.checked_sub(1).unwrap_or(0)..=*end).contains(position) {
+                if (start.saturating_sub(1)..=*end).contains(position) {
                     neighbors.push(*number);
                 }
             }
@@ -121,7 +121,7 @@ pub fn part2(input: String) -> crate::PuzzleResult {
         // Check previous stars against new numbers
         for (position, neighbors) in &mut previous_stars {
             for (start, end, number) in &numbers {
-                if (start.checked_sub(1).unwrap_or(0)..=*end).contains(position) {
+                if (start.saturating_sub(1)..=*end).contains(position) {
                     neighbors.push(*number);
                 }
             }

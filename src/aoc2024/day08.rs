@@ -52,14 +52,13 @@ pub fn part1(input: String) -> crate::PuzzleResult {
     for locations in map.antennas.values() {
         for location_1 in locations {
             for location_2 in locations {
-                if location_1 != location_2 {
-                    if let [Some(i), Some(j)] =
+                if location_1 != location_2
+                    && let [Some(i), Some(j)] =
                         [0, 1].map(|k| (2 * location_1[k]).checked_sub(location_2[k]))
-                    {
-                        if i < map.height && j < map.width {
-                            antinodes.insert([i, j]);
-                        }
-                    }
+                    && i < map.height
+                    && j < map.width
+                {
+                    antinodes.insert([i, j]);
                 }
             }
         }

@@ -9,9 +9,9 @@
 pub fn part1(input: String) -> crate::PuzzleResult {
     let mut sum: usize = 0;
     for line in input.lines() {
-        let hits = line.matches(|c: char| c.is_digit(10));
+        let mut hits = line.matches(|c: char| c.is_ascii_digit());
         let first = hits.clone().next().ok_or(format!("no digit in {line}"))?;
-        let last = hits.last().ok_or(format!("no two digits in {line}"))?;
+        let last = hits.next_back().ok_or(format!("no two digits in {line}"))?;
         let number: usize = format!("{first}{last}").parse()?;
         sum += number;
     }
@@ -38,13 +38,13 @@ pub fn part2(input: String) -> crate::PuzzleResult {
     for line in input.lines() {
         let first = digits[digits
             .keys()
-            .filter_map(|key| line.find(key).and_then(|index| Some((key, index))))
+            .filter_map(|key| line.find(key).map(|index| (key, index)))
             .min_by(|a, b| a.1.cmp(&b.1))
             .ok_or(format!("no digit in {line}"))?
             .0];
         let last = digits[digits
             .keys()
-            .filter_map(|key| line.rfind(key).and_then(|index| Some((key, index))))
+            .filter_map(|key| line.rfind(key).map(|index| (key, index)))
             .max_by(|a, b| a.1.cmp(&b.1))
             .ok_or(format!("no two digits in {line}"))?
             .0];

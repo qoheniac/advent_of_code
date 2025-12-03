@@ -2,7 +2,7 @@
 //!
 //! Lines start with five characters representing a hand of cards and end with a
 //! number representing a bid. The hands need to be ordered by first comparing
-//! their kinds and whenever they are the same kind then by comparing their
+//! their categories and whenever they are the same category then by comparing their
 //! cards first to last. The solution is the sum of all bids multiplied by their
 //! rank.
 //!
@@ -28,7 +28,7 @@ enum Card {
 use Card::*;
 
 #[derive(Eq, Ord, PartialOrd, PartialEq)]
-enum Kind {
+enum Category {
     HighCard,
     OnePair,
     TwoPair,
@@ -37,7 +37,7 @@ enum Kind {
     FourOfAKind,
     FiveOfAKind,
 }
-use Kind::*;
+use Category::*;
 
 #[derive(Eq, PartialEq)]
 struct Hand {
@@ -46,7 +46,7 @@ struct Hand {
 }
 
 impl Hand {
-    fn kind(&self) -> Kind {
+    fn category(&self) -> Category {
         let mut counts = std::collections::HashMap::new();
         let mut jokers = 0;
         for card in &self.cards {
@@ -81,10 +81,10 @@ impl Hand {
 
 impl Ord for Hand {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        // First rule: sort by kind
-        let kind_order = self.kind().cmp(&other.kind());
-        if kind_order.is_ne() {
-            return kind_order;
+        // First rule: sort by category
+        let category_order = self.category().cmp(&other.category());
+        if category_order.is_ne() {
+            return category_order;
         }
         // Second rule: sort by card
         for (this_card, other_card) in self.cards.iter().zip(&other.cards) {

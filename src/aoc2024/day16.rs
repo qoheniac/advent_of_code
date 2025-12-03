@@ -214,8 +214,7 @@ fn solution(input: String, task: Task) -> crate::PuzzleResult {
             direction,
         });
     }
-    while !to_visit.is_empty() {
-        let state = to_visit.pop().unwrap();
+    while let Some(state) = to_visit.pop() {
         lowest_score_path_tiles.insert(state.position);
         if let Some(predecessors) = predecessors.get(&state) {
             for &predecessor in predecessors {

@@ -175,7 +175,7 @@ fn parse_input(input: String) -> Result<(Grid, Vec<State>), String> {
     // Collect states along the pipe
     let mut pipe = vec![original_state];
     loop {
-        let state = grid.try_step(pipe.last().unwrap().clone())?;
+        let state = grid.try_step(*pipe.last().unwrap())?;
         if state == original_state {
             return Ok((grid, pipe));
         }

@@ -16,8 +16,8 @@ fn solution(input: String, iterations: u8) -> crate::PuzzleResult {
             let number = numbers[i];
             if number == 0 {
                 numbers[i] = 1;
-            } else if number.ilog10() % 2 != 0 {
-                let n = (number.ilog(10) + 1) / 2;
+            } else if !number.ilog10().is_multiple_of(2) {
+                let n = number.ilog(10).div_ceil(2);
                 numbers[i] = number / 10u64.pow(n);
                 numbers.insert(i + 1, number - numbers[i] * 10u64.pow(n));
                 counts.insert(i + 1, counts[i]);

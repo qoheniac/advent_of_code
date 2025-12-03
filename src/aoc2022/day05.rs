@@ -17,13 +17,11 @@ fn solution(input: String, part: Part) -> crate::PuzzleResult {
     let numbers_row = starting_rows.next().unwrap();
     let mut stack_indices = Vec::new();
     let mut stacks = Vec::new();
-    let mut index: usize = 0;
-    for character in numbers_row.chars() {
+    for (index, character) in numbers_row.chars().enumerate() {
         if character.is_numeric() {
             stack_indices.push(index);
             stacks.push(Vec::new());
         }
-        index += 1;
     }
     for row in starting_rows {
         let row_chars: Vec<char> = row.chars().collect();

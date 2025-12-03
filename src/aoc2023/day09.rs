@@ -24,11 +24,9 @@ fn prediction(sequence: Vec<i64>, direction: &Direction) -> Option<i64> {
             sequence.windows(2).map(|w| w[1] - w[0]).collect(),
             direction,
         )
-        .and_then(|prediction| {
-            Some(match direction {
-                Left => last - prediction,
-                Right => last + prediction,
-            })
+        .map(|prediction| match direction {
+            Left => last - prediction,
+            Right => last + prediction,
         })
     })
 }

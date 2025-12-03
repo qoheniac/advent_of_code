@@ -28,11 +28,7 @@ pub fn part2(input: String) -> crate::PuzzleResult {
     let mut enabled = true;
     for caps in re.captures_iter(&input) {
         if caps.name("do").is_some() {
-            if caps.name("not").is_some() {
-                enabled = false;
-            } else {
-                enabled = true;
-            }
+            enabled = caps.name("not").is_none();
         } else if enabled {
             let x: u32 = caps.name("x").unwrap().as_str().parse()?;
             let y: u32 = caps.name("y").unwrap().as_str().parse()?;

@@ -1,5 +1,5 @@
 use advent_of_code::solve;
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, criterion_group, criterion_main};
 
 macro_rules! bench {
     ($function:ident) => {
@@ -15,10 +15,10 @@ macro_rules! bench {
             c.bench_function(stringify!($function), |b| {
                 b.iter(|| {
                     solve(
-                        black_box(year),
-                        black_box(day),
-                        black_box(part),
-                        black_box(input.clone()),
+                        std::hint::black_box(year),
+                        std::hint::black_box(day),
+                        std::hint::black_box(part),
+                        std::hint::black_box(input.clone()),
                     )
                 })
             });

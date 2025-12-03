@@ -8,14 +8,10 @@
 use itertools::Itertools;
 
 fn sort_pair((a, b): (usize, usize)) -> (usize, usize) {
-    if a < b {
-        (a, b)
-    } else {
-        (b, a)
-    }
+    if a < b { (a, b) } else { (b, a) }
 }
 
-fn count_between(vector: &Vec<bool>, start: usize, end: usize) -> usize {
+fn count_between(vector: &[bool], start: usize, end: usize) -> usize {
     vector[start..end].iter().filter(|&&b| b).count()
 }
 

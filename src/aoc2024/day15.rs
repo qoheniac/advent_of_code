@@ -84,10 +84,10 @@ impl Warehouse {
                 if location.is_none() || self.walls.contains(&location.unwrap()) {
                     return false;
                 }
-                if let Some(other_box) = self.contains_box(location.unwrap()) {
-                    if other_box != [i, j] {
-                        other_boxes.insert(other_box);
-                    }
+                if let Some(other_box) = self.contains_box(location.unwrap())
+                    && other_box != [i, j]
+                {
+                    other_boxes.insert(other_box);
                 }
             }
         }
@@ -107,14 +107,13 @@ impl Warehouse {
     }
 
     fn instruct(&mut self, instruction: Instruction) {
-        if let Some(location) = self.apply_instruction_to_location(instruction, self.robot) {
-            if !self.walls.contains(&location) {
-                if !self.contains_box(location).is_some_and(|box_location| {
-                    !self.move_boxes(HashSet::from([box_location]), instruction)
-                }) {
-                    self.robot = location;
-                }
-            }
+        if let Some(location) = self.apply_instruction_to_location(instruction, self.robot)
+            && !self.walls.contains(&location)
+            && !self.contains_box(location).is_some_and(|box_location| {
+                !self.move_boxes(HashSet::from([box_location]), instruction)
+            })
+        {
+            self.robot = location;
         }
     }
 

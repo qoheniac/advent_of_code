@@ -31,8 +31,7 @@ pub fn part1(input: String) -> crate::PuzzleResult {
     let mut lines = input.lines().map(|line| {
         line.split_whitespace()
             .skip(1)
-            .map(|number| number.parse::<f64>().ok())
-            .flatten()
+            .filter_map(|number| number.parse::<f64>().ok())
     });
     let times = lines.next().ok_or("times not found")?;
     let distances = lines.next().ok_or("distances not found")?;
@@ -43,16 +42,13 @@ pub fn part1(input: String) -> crate::PuzzleResult {
 /// Part 2: Ways to reach further than the given distance in the given time
 /// where numbers are found by ignoring whitespace
 pub fn part2(input: String) -> crate::PuzzleResult {
-    let mut lines = input
-        .lines()
-        .map(|line| {
-            line.split_whitespace()
-                .skip(1)
-                .collect::<String>()
-                .parse::<f64>()
-                .ok()
-        })
-        .flatten();
+    let mut lines = input.lines().filter_map(|line| {
+        line.split_whitespace()
+            .skip(1)
+            .collect::<String>()
+            .parse::<f64>()
+            .ok()
+    });
     let time = lines.next().ok_or("time not found")?;
     let distance = lines.next().ok_or("distance not found")?;
     let ways = ways((time, distance));

@@ -4,8 +4,7 @@
 
 fn solution<const ROPE_LENGTH: usize>(input: String) -> crate::PuzzleResult {
     let mut rope_positions = [[0i32, 0i32]; ROPE_LENGTH];
-    let mut where_tail_was =
-        std::collections::HashSet::from([rope_positions[ROPE_LENGTH - 1].clone()]);
+    let mut where_tail_was = std::collections::HashSet::from([rope_positions[ROPE_LENGTH - 1]]);
     for line in input.lines() {
         let motion: Vec<&str> = line.split_whitespace().collect();
         let head_velocity = match motion[0] {
@@ -33,7 +32,7 @@ fn solution<const ROPE_LENGTH: usize>(input: String) -> crate::PuzzleResult {
                     }
                 }
             }
-            where_tail_was.insert(rope_positions[ROPE_LENGTH - 1].clone());
+            where_tail_was.insert(rope_positions[ROPE_LENGTH - 1]);
         }
     }
     Ok(where_tail_was.len().to_string())

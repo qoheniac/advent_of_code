@@ -18,7 +18,7 @@ fn read_forrest(input: String) -> Result<Forrest, String> {
 
 fn update_reached_threshold(
     max_height: &mut Option<u32>,
-    is_visible: &mut Vec<Vec<bool>>,
+    is_visible: &mut [Vec<bool>],
     forrest: &Forrest,
     (row_index, column_index): (usize, usize),
 ) -> bool {
@@ -94,36 +94,36 @@ pub fn part2(input: String) -> crate::PuzzleResult {
 
             // look up
             let mut up_score = 0;
-            for k in (0..i).rev() {
+            for row in forrest[..i].iter().rev() {
                 up_score += 1;
-                if forrest[k][j] >= height {
+                if row[j] >= height {
                     break;
                 }
             }
 
             // look left
             let mut left_score = 0;
-            for k in (0..j).rev() {
+            for h in forrest[i][..j].iter().rev() {
                 left_score += 1;
-                if forrest[i][k] >= height {
+                if *h >= height {
                     break;
                 }
             }
 
             // look right
             let mut right_score = 0;
-            for k in (j + 1)..column_number {
+            for h in &forrest[i][(j + 1)..] {
                 right_score += 1;
-                if forrest[i][k] >= height {
+                if *h >= height {
                     break;
                 }
             }
 
             // look down
             let mut down_score = 0;
-            for k in (i + 1)..row_number {
+            for row in &forrest[(i + 1)..] {
                 down_score += 1;
-                if forrest[k][j] >= height {
+                if row[j] >= height {
                     break;
                 }
             }

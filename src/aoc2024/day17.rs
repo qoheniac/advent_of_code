@@ -83,7 +83,7 @@ impl Computer {
                 Jnz if self.a == 0 => (),
                 Jnz => self.pointer = operand >> 1,
                 Bxc => self.b ^= self.c,
-                Out if output.len() == 0 => output = (self.combo(operand) & 7).to_string(),
+                Out if output.is_empty() => output = (self.combo(operand) & 7).to_string(),
                 Out => output.push_str(&format!(",{}", self.combo(operand) & 7)),
                 Bdv => self.b = self.a / (1 << self.combo(operand)),
                 Cdv => self.c = self.a / (1 << self.combo(operand)),

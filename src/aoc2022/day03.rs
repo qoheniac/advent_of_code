@@ -31,12 +31,7 @@ pub fn part1(input: String) -> crate::PuzzleResult {
 pub fn part2(input: String) -> crate::PuzzleResult {
     let mut sum = 0;
     let mut rucksacks = input.lines();
-    loop {
-        let rucksack1;
-        match rucksacks.next() {
-            Some(rucksack) => rucksack1 = rucksack,
-            None => break,
-        }
+    while let Some(rucksack1) = rucksacks.next() {
         let rucksack2 = rucksacks.next().unwrap();
         let rucksack3 = rucksacks.next().unwrap();
         for item in rucksack1.chars() {

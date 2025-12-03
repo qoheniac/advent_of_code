@@ -28,11 +28,11 @@ use Direction::*;
 impl Direction {
     fn step(&self, Location(i, j): Location, d: usize) -> Location {
         let d = d as i32;
-        match self {
-            &Down => Location(i + d, j),
-            &Left => Location(i, j - d),
-            &Right => Location(i, j + d),
-            &Up => Location(i - d, j),
+        match *self {
+            Down => Location(i + d, j),
+            Left => Location(i, j - d),
+            Right => Location(i, j + d),
+            Up => Location(i - d, j),
         }
     }
 
@@ -45,11 +45,11 @@ impl Direction {
     }
 
     fn turn_left(&self) -> Direction {
-        match self {
-            &Down => Right,
-            &Left => Down,
-            &Right => Up,
-            &Up => Left,
+        match *self {
+            Down => Right,
+            Left => Down,
+            Right => Up,
+            Up => Left,
         }
     }
 
@@ -118,7 +118,7 @@ impl<const MIN: usize, const MAX: usize> Losses<MIN, MAX> {
 
     fn index(direction: Direction, count: usize) -> usize {
         if count + MIN < MAX {
-            count as usize
+            count
                 + (MAX - MIN)
                     * match direction {
                         Down => 0,
@@ -138,7 +138,7 @@ impl<const MIN: usize, const MAX: usize> Losses<MIN, MAX> {
     fn get(&self, State(Location(i, j), direction, count): State<MIN, MAX>) -> Option<u32> {
         self.0
             .get((i as usize, j as usize))
-            .and_then(|array| Some(array[Self::index(direction, count)]))
+            .map(|array| array[Self::index(direction, count)])
     }
 
     fn update(&mut self, State(Location(i, j), direction, count): State<MIN, MAX>, loss: u32) {

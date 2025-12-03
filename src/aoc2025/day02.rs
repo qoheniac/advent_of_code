@@ -8,8 +8,8 @@
 /// Part 1: Sum of invalid IDs
 pub fn part1(input: String) -> crate::PuzzleResult {
     let mut sum = 0;
-    for range in input.trim().split(",") {
-        let (start, stop) = range.split_once("-").ok_or("invalid string")?;
+    for range in input.trim().split(',') {
+        let (start, stop) = range.split_once('-').ok_or("invalid string")?;
 
         // parse start ID
         let half_start_len = start.len() / 2;

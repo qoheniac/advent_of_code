@@ -17,8 +17,8 @@ fn solution(input: String, with_smudges: bool) -> crate::PuzzleResult {
         'reflection: for row in 1..height {
             let mut smudge_fixed = !with_smudges;
             for delta in 0..row.min(height - row) {
-                for column in 0..width {
-                    if pattern[row - delta - 1][column] != pattern[row + delta][column] {
+                for (&top, &bottom) in pattern[row - delta - 1].iter().zip(&pattern[row + delta]) {
+                    if top != bottom {
                         if smudge_fixed {
                             continue 'reflection;
                         }
@@ -36,8 +36,8 @@ fn solution(input: String, with_smudges: bool) -> crate::PuzzleResult {
         'reflection: for column in 1..width {
             let mut smudge_fixed = !with_smudges;
             for delta in 0..column.min(width - column) {
-                for row in 0..height {
-                    if pattern[row][column - delta - 1] != pattern[row][column + delta] {
+                for row in &pattern {
+                    if row[column - delta - 1] != row[column + delta] {
                         if smudge_fixed {
                             continue 'reflection;
                         }

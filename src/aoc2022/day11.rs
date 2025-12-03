@@ -30,8 +30,7 @@ fn solution(input: String, part: Part) -> PuzzleResult {
                 .next()
                 .unwrap()
                 .split(": ")
-                .skip(1)
-                .next()
+                .nth(1)
                 .unwrap()
                 .split(", ")
                 .map(|item| item.parse::<u64>().unwrap())
@@ -41,8 +40,7 @@ fn solution(input: String, part: Part) -> PuzzleResult {
                 .next()
                 .unwrap()
                 .split(" = ")
-                .skip(1)
-                .next()
+                .nth(1)
                 .unwrap()
                 .split_whitespace()
                 .skip(1)
@@ -52,22 +50,14 @@ fn solution(input: String, part: Part) -> PuzzleResult {
                 .next()
                 .unwrap()
                 .split_whitespace()
-                .skip(3)
-                .next()
+                .nth(3)
                 .unwrap()
                 .parse()
                 .unwrap();
 
             let receivers: Vec<usize> = lines
                 .take(2)
-                .map(|line| {
-                    line.split_whitespace()
-                        .skip(5)
-                        .next()
-                        .unwrap()
-                        .parse()
-                        .unwrap()
-                })
+                .map(|line| line.split_whitespace().nth(5).unwrap().parse().unwrap())
                 .collect();
 
             Monkey {
@@ -88,38 +78,32 @@ fn solution(input: String, part: Part) -> PuzzleResult {
 
     for _ in 0..rounds {
         for i in 0..monkeys.len() {
-            loop {
-                if let Some(mut item) = monkeys[i].items.pop() {
-                    monkeys[i].inspected += 1;
+            while let Some(mut item) = monkeys[i].items.pop() {
+                monkeys[i].inspected += 1;
 
-                    // inspect
-                    let operand;
-                    if monkeys[i].operand == "old" {
-                        operand = item;
-                    } else {
-                        operand = monkeys[i].operand.parse().unwrap();
-                    }
-                    item = match monkeys[i].operator {
-                        '+' => item + operand,
-                        '*' => item * operand,
-                        _ => panic!(),
-                    };
-                    item = match part {
-                        Part1 => item / relief,
-                        Part2 => item % relief,
-                    };
-
-                    // throw
-                    let j;
-                    if item.rem_euclid(monkeys[i].divisor) == 0 {
-                        j = monkeys[i].receivers[0]
-                    } else {
-                        j = monkeys[i].receivers[1]
-                    }
-                    monkeys[j].items.push(item);
+                // inspect
+                let operand = if monkeys[i].operand == "old" {
+                    item
                 } else {
-                    break;
-                }
+                    monkeys[i].operand.parse().unwrap()
+                };
+                item = match monkeys[i].operator {
+                    '+' => item + operand,
+                    '*' => item * operand,
+                    _ => panic!(),
+                };
+                item = match part {
+                    Part1 => item / relief,
+                    Part2 => item % relief,
+                };
+
+                // throw
+                let j = if item.rem_euclid(monkeys[i].divisor) == 0 {
+                    monkeys[i].receivers[0]
+                } else {
+                    monkeys[i].receivers[1]
+                };
+                monkeys[j].items.push(item);
             }
         }
     }

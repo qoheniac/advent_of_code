@@ -96,7 +96,7 @@ fn arrangements_with_cache(
 }
 
 fn arrangements(statuses: &[Status], lengths: &[usize]) -> usize {
-    arrangements_with_cache(&statuses, &lengths, &mut std::collections::HashMap::new())
+    arrangements_with_cache(statuses, lengths, &mut std::collections::HashMap::new())
 }
 
 fn solution(input: String, repeat: usize) -> crate::PuzzleResult {

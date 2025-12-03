@@ -8,8 +8,6 @@
 //!
 //! [puzzle site](https://adventofcode.com/2023/day/16)
 
-use std::usize;
-
 use itertools::Itertools;
 use ndarray::Array2;
 
@@ -27,11 +25,11 @@ use Direction::*;
 
 impl Direction {
     fn step(&self, Location(i, j): Location) -> Location {
-        match self {
-            &Down => Location(i + 1, j),
-            &Left => Location(i, j - 1),
-            &Right => Location(i, j + 1),
-            &Up => Location(i - 1, j),
+        match *self {
+            Down => Location(i + 1, j),
+            Left => Location(i, j - 1),
+            Right => Location(i, j + 1),
+            Up => Location(i - 1, j),
         }
     }
 }
@@ -111,7 +109,7 @@ impl Contraption {
             .iter()
             .flat_map(|&direction| {
                 self.step(location, direction)
-                    .and_then(|location| Some(BeamSegment(location, direction)))
+                    .map(|location| BeamSegment(location, direction))
             })
             .collect()
     }

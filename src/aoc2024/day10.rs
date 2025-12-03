@@ -69,10 +69,10 @@ fn solution(input: String, count_distinct: bool) -> crate::PuzzleResult {
         for target in 1..=9 {
             for _ in 0..locations.len() {
                 for neighbor in map.neighbors(locations.pop_front().unwrap()) {
-                    if map.get(neighbor) == target {
-                        if count_distinct || !locations.contains(&neighbor) {
-                            locations.push_back(neighbor);
-                        }
+                    if map.get(neighbor) == target
+                        && (count_distinct || !locations.contains(&neighbor))
+                    {
+                        locations.push_back(neighbor);
                     }
                 }
             }

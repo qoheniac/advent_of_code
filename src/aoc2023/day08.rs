@@ -56,7 +56,7 @@ pub fn part2(input: String) -> crate::PuzzleResult {
     // Collect start locations
     let mut locations = std::collections::HashSet::new();
     for &node in nodes.keys() {
-        if node.chars().last().unwrap() == 'A' {
+        if node.ends_with('A') {
             locations.insert(node);
         }
     }
@@ -76,7 +76,7 @@ pub fn part2(input: String) -> crate::PuzzleResult {
 
         // Check if destination is reached
         for location in &locations.clone() {
-            if location.chars().last().unwrap() == 'Z' {
+            if location.ends_with('Z') {
                 locations.remove(location);
                 lowest_common_multiple = lowest_common_multiple.lcm(&steps);
             }

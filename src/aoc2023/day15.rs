@@ -45,7 +45,7 @@ pub fn part2(input: String) -> crate::PuzzleResult {
         let index = hash(&label);
         match (
             step.name("focal_length")
-                .and_then(|m| Some(m.as_str().parse::<usize>().unwrap())),
+                .map(|m| m.as_str().parse::<usize>().unwrap()),
             boxes[index].iter().position(|(s, _)| s == &label),
         ) {
             (Some(focal_length), Some(position)) => boxes[index][position].1 = focal_length,
