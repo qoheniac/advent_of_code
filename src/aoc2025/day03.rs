@@ -13,11 +13,11 @@ fn solution(input: String, digits_count: usize) -> crate::PuzzleResult {
         for char in line.chars() {
             let digit = char.to_digit(10).ok_or("invalid character")? as u64;
             let mut carry = 0;
-            for i in 0..digits_count {
+            for best in bests.iter_mut() {
                 let candidate = carry * 10 + digit;
-                carry = bests[i];
-                if candidate > bests[i] {
-                    bests[i] = candidate;
+                carry = *best;
+                if candidate > *best {
+                    *best = candidate;
                 }
             }
         }
