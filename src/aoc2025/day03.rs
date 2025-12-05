@@ -4,7 +4,7 @@
 //! and concatenating in order gives a possible rating for that line. The
 //! solution is the sum of the largest possible ratings of all lines.
 //!
-//! [puzzle site](https://adventofcode.com/2025/day/2)
+//! [puzzle site](https://adventofcode.com/2025/day/3)
 
 fn solution(input: String, digits_count: usize) -> crate::PuzzleResult {
     let mut sum = 0;

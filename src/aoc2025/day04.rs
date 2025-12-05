@@ -4,7 +4,7 @@
 //! accessible if its neighbored by at most three paper rolls (horizontally,
 //! vertically, or diagonally). Accessible rolls can be removed.
 //!
-//! [puzzle site](https://adventofcode.com/2025/day/2)
+//! [puzzle site](https://adventofcode.com/2025/day/4)
 
 fn get_accessible_rolls(map: &[Vec<char>]) -> Vec<[usize; 2]> {
     let height = map.len();
