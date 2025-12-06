@@ -1,8 +1,9 @@
 //! # Day 6: Trash Compactor
 //!
-//! The input has columns of math problems consisting of three numbers and an
-//! operator which explains whether the numbers should be added (+) or
-//! multiplied (*). The solution is the sum of all the individual solutions.
+//! The input has math problems separated by columns of only spaces and
+//! consisting of some numbers and an operator which explains whether the
+//! numbers should be added (+) or multiplied (*). The solution is the sum of
+//! all the individual solutions.
 //!
 //! [puzzle site](https://adventofcode.com/2025/day/6)
 
@@ -18,7 +19,7 @@ fn get_dimensions<E>(lines: &[Vec<E>]) -> Result<[usize; 2], String> {
     Ok([width, height])
 }
 
-/// Day 1
+/// Day 1: Read numbers left to right
 #[allow(clippy::needless_range_loop)]
 pub fn part1(input: String) -> crate::PuzzleResult {
     let lines: Vec<Vec<&str>> =
@@ -40,7 +41,7 @@ pub fn part1(input: String) -> crate::PuzzleResult {
     Ok(sum.to_string())
 }
 
-/// Day 2
+/// Day 2: Read numbers top to bottom
 pub fn part2(input: String) -> crate::PuzzleResult {
     let lines: Vec<Vec<char>> = (input.lines().map(|line| line.chars().collect())).collect();
     let [width, height] = get_dimensions(&lines)?;
