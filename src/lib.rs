@@ -83,6 +83,7 @@ pub mod aoc2025 {
     pub mod day04;
     pub mod day05;
     pub mod day06;
+    pub mod day07;
 }
 
 /// Common return type of puzzle solutions
@@ -220,6 +221,8 @@ pub fn solve(year: usize, day: usize, part: usize, input: String) -> PuzzleResul
         (2025, 5, 2) => aoc2025::day05::part2(input),
         (2025, 6, 1) => aoc2025::day06::part1(input),
         (2025, 6, 2) => aoc2025::day06::part2(input),
+        (2025, 7, 1) => aoc2025::day07::part1(input),
+        (2025, 7, 2) => aoc2025::day07::part2(input),
 
         (year, day, part) => Err(format!("no solution for day {day} part {part} of {year}"))?,
     }

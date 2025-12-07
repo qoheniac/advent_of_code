@@ -146,4 +146,6 @@ benches!(
     benchmark_2025_05_2,
     benchmark_2025_06_1,
     benchmark_2025_06_2,
+    benchmark_2025_07_1,
+    benchmark_2025_07_2,
 );
