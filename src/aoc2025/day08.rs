@@ -5,8 +5,9 @@
 //!
 //! [puzzle site](https://adventofcode.com/2025/day/8)
 
-fn parse_input(input: String) -> Result<Vec<[u64; 3]>, Box<dyn std::error::Error>> {
-    let mut locations = Vec::new();
+fn solution(input: String, subset: Option<usize>) -> crate::PuzzleResult {
+    // parse input
+    let mut locations: Vec<[u64; 3]> = Vec::new();
     for line in input.lines() {
         let mut coordinates = line.split(",");
         let x = coordinates.next().ok_or("x missing")?.parse()?;
@@ -14,36 +15,33 @@ fn parse_input(input: String) -> Result<Vec<[u64; 3]>, Box<dyn std::error::Error
         let z = coordinates.next().ok_or("z missing")?.parse()?;
         locations.push([x, y, z]);
     }
-    Ok(locations)
-}
+    let count = locations.len();
 
-fn n_shortest(locations: &[[u64; 3]], n: usize) -> Vec<([usize; 2], u64)> {
-    let len = locations.len();
-    let mut shortest = Vec::new();
-    for (i, r_i) in locations.iter().enumerate().take(len - 1) {
+    // find n shortest connections (if subset is None sort all connections)
+    let n = subset.unwrap_or(count * (count - 1) / 2);
+    let mut connections = Vec::new();
+    for (i, r_i) in locations.iter().enumerate().take(count - 1) {
         for (j, r_j) in locations.iter().enumerate().skip(i + 1) {
             let d: u64 = (r_i.iter().zip(r_j).map(|p| p.0.abs_diff(*p.1).pow(2))).sum();
-            let mut insertion_index = shortest.len();
-            for (k, (_, distance)) in shortest.iter().enumerate() {
+            let mut insertion_index = connections.len();
+            for (k, (_, distance)) in connections.iter().enumerate() {
                 if d < *distance {
                     insertion_index = k;
                     break;
                 }
             }
             if insertion_index < n {
-                shortest.insert(insertion_index, ([i, j], d));
+                connections.insert(insertion_index, ([i, j], d));
             }
-            if shortest.len() > n {
-                shortest.pop();
+            if connections.len() > n {
+                connections.pop();
             }
         }
     }
-    shortest
-}
 
-fn clusters(connections: &Vec<([usize; 2], u64)>) -> Vec<Vec<usize>> {
+    // cluster locations with respect to connections
     let mut clusters: Vec<Vec<usize>> = Vec::new();
-    for &([i, j], _) in connections {
+    for ([i, j], _) in connections {
         let mut i_cluster_index = None;
         for (k, cluster) in clusters.iter().enumerate() {
             if cluster.contains(&i) {
@@ -71,13 +69,15 @@ fn clusters(connections: &Vec<([usize; 2], u64)>) -> Vec<Vec<usize>> {
                 }
             }
         }
-    }
-    clusters
-}
 
-fn n_solution(input: String, n: usize) -> crate::PuzzleResult {
-    let clusters = clusters(&n_shortest(&parse_input(input)?, n));
-    let mut lengths: Vec<usize> = clusters.iter().map(|c| c.len()).collect();
+        // Part 2 solution
+        if subset.is_none() && clusters[0].len() == count {
+            return Ok((locations[i][0] * locations[j][0]).to_string());
+        }
+    }
+
+    // Part 1 solution
+    let mut lengths: Vec<_> = clusters.iter().map(|c| c.len()).collect();
     lengths.sort_unstable();
     Ok((lengths.iter().rev().take(3).fold(1, |acc, len| acc * len)).to_string())
 }
@@ -85,7 +85,14 @@ fn n_solution(input: String, n: usize) -> crate::PuzzleResult {
 /// Part 1: Product of the number of locations in the three largest clusters
 /// formed by connecting the 1000 locations with the shortest distance
 pub fn part1(input: String) -> crate::PuzzleResult {
-    n_solution(input, 1000)
+    solution(input, Some(1000))
+}
+
+/// Part 2: Product of the x-components of the last location pair, when pairs
+/// are considered in ascending distance order and connected until all locations
+/// form one cluster
+pub fn part2(input: String) -> crate::PuzzleResult {
+    solution(input, None)
 }
 
 #[cfg(test)]
@@ -115,6 +122,11 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        assert_eq!(&super::n_solution(INPUT.to_string(), 10).unwrap(), "40");
+        assert_eq!(&super::solution(INPUT.to_string(), Some(10)).unwrap(), "40");
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(&super::part2(INPUT.to_string()).unwrap(), "25272");
     }
 }
